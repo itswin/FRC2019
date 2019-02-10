@@ -10,6 +10,7 @@ package frc.robot;
 import frc.controllers.LogitechController;
 import frc.robot.commands.*;
 import frc.robot.commands.Lift.*;
+import frc.robot.commands.Intake.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -48,8 +49,16 @@ public class OI {
   public OI() {
     driveController = new LogitechController(0);
 
-    //driveController.aButton.whenPressed(new DriveForward(2));
     driveController.rightBumperButton.whenPressed(new ClearSchedulerCommand());
-    driveController.leftBumperButton.whenPressed(new SwitchMotorTypeCommand());
+    // driveController.leftBumperButton.whenPressed(new SwitchMotorTypeCommand());
+
+    driveController.rightBumperButton.whileActive(new IntakeCommand());
+    driveController.rightBumperButton.whenReleased(new IntakeSmoothStopCommand());
+    driveController.leftBumperButton.whileActive(new OuttakeCommand());
+    driveController.leftBumperButton.whenReleased(new StopIntakeCommand());
+
+    driveController.aButton.whileActive(new RocketCargoPositioningCommand());
+    driveController.aButton.whenInactive(new RocketHatchPositioningCommand());
+    driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
   }
 }

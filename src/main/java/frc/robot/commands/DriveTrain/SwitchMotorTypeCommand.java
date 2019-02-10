@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.DriveTrain;
 
 import edu.wpi.first.wpilibj.command.Command;
 import com.revrobotics.*;

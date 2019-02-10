@@ -25,19 +25,35 @@ public class Lift extends PIDSubsystem {
   private CANEncoder leftLiftEncoder;
   private CANEncoder rightLiftEncoder;
 
+  private final double minLeftLiftEncoderValue = -100; // -100
+  private final double maxLeftLiftEncoderValue = 1; // 1
+  private final double minRightLiftEncoderValue = -1; // -1
+  private final double maxRightLiftEncoderValue = 100; // 100
+
+  public static final double kHome = 0;
+  public static final double kFirstRocketCargoHole = 30;
+  public static final double kSecondRocketCargoHole = 67;
+  public static final double kThirdRocketCargoHole = 99;
+  public static final double kFirstRocketHatch = 0;
+  public static final double kSecondRocketHatch = 45;
+  public static final double kThirdRocketHatch = 80;
+
+  private final double kAbsoluteTolerance = 1;
+  private final double kPercentTolerance = 3;
+
   /**
    * Add your docs here.
    */
   public Lift() {
     // Intert a subsystem name and PID values here
-    super("Lift", 1, 2, 3);
+    super("Lift", .05, 0, 0, 0, .01);
     // Use these to get going:
     // setSetpoint() - Sets where the PID controller should move the system
     // to
     // enable() - Enables the PID controller.
 
-    leftLiftMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
-    rightLiftMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+    leftLiftMotor = new CANSparkMax(RobotMap.leftLiftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    rightLiftMotor = new CANSparkMax(RobotMap.rightLiftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     leftLiftEncoder = new CANEncoder(leftLiftMotor);
     rightLiftEncoder = new CANEncoder(rightLiftMotor);
@@ -47,6 +63,12 @@ public class Lift extends PIDSubsystem {
 
     leftLiftMotor.setInverted(true);
     rightLiftMotor.setInverted(false);
+
+    setOutputRange(-1, 1);
+    setInputRange(minRightLiftEncoderValue - 5, maxRightLiftEncoderValue + 5);
+    setAbsoluteTolerance(kAbsoluteTolerance);
+    setPercentTolerance(kPercentTolerance);
+    enable();
   }
 
   @Override
@@ -61,13 +83,18 @@ public class Lift extends PIDSubsystem {
     // Return your input value for the PID loop
     // e.g. a sensor, like a potentiometer:
     // yourPot.getAverageVoltage() / kYourMaxVoltage;
-    return 0.0;
+    return getRightLiftEncoder();
   }
 
   @Override
   protected void usePIDOutput(double output) {
     // Use output to drive your system, like a motor
     // e.g. yourMotor.set(output);
+    // System.out.println("PID: " + output);
+    if(output < 0) {
+      output *= .5;
+    }
+    setPower(output);
   }
 
   public void setPower(double speed) {
@@ -86,5 +113,25 @@ public class Lift extends PIDSubsystem {
 
   public double getRightLiftEncoder() {
     return rightLiftEncoder.getPosition();
+  }
+
+  public boolean canLeftLiftAscend() {
+    return getLeftLiftEncoder() < maxLeftLiftEncoderValue;
+  }
+
+  public boolean canLeftLiftDescend() {
+    return getLeftLiftEncoder() > minLeftLiftEncoderValue;
+  }
+
+  public boolean canRightLiftAscend() {
+    return getRightLiftEncoder() > minRightLiftEncoderValue;
+  }
+
+  public boolean canRightLiftDescend() {
+    return getRightLiftEncoder() < maxRightLiftEncoderValue;
+  }
+
+  public double getMaxRightLiftEncoderValue() {
+    return maxRightLiftEncoderValue;
   }
 }

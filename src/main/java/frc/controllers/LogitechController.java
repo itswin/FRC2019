@@ -7,6 +7,7 @@ package frc.controllers;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.POVButton;
 
 public class LogitechController {
     
@@ -19,6 +20,9 @@ public class LogitechController {
     public JoystickButton yButton;
     public JoystickButton leftBumperButton;
     public JoystickButton rightBumperButton;
+    public POVButton povDownButton;
+    public POVButton povRightButton;
+    public POVButton povUpButton;
 
     public LogitechController(int port) {
         m_stick = new Joystick(port);
@@ -29,6 +33,9 @@ public class LogitechController {
         yButton = new JoystickButton(m_stick, 4);
         leftBumperButton = new JoystickButton(m_stick, 5);
         rightBumperButton = new JoystickButton(m_stick, 6);
+        povDownButton = new POVButton(m_stick, 180, 0);
+        povRightButton = new POVButton(m_stick, 90, 0);
+        povUpButton = new POVButton(m_stick, 0, 0);
     }
 
     public double getLeftXAxis() {

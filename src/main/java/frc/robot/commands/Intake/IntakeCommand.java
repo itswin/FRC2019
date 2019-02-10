@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
@@ -13,23 +13,20 @@ import frc.robot.Robot;
 /**
  * Add your docs here.
  */
-public class ClearSchedulerCommand extends InstantCommand {
+public class IntakeCommand extends InstantCommand {
   /**
    * Add your docs here.
    */
-  public ClearSchedulerCommand() {
+  public IntakeCommand() {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-
-    // Require every subsystem to clear all commands
-    requires(Robot.m_driveTrain);
-    requires(Robot.m_lift);
+    requires(Robot.m_intake);
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
+    Robot.m_intake.intake();
   }
-
 }

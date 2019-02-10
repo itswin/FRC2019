@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import com.revrobotics.*;
 
 import frc.robot.RobotMap;
-import frc.robot.commands.DriveTrainCommand;
+import frc.robot.commands.DriveTrain.*;
 
 import jaci.pathfinder.*;
 
@@ -38,19 +38,19 @@ public class DriveTrain extends Subsystem {
   public final double kDistanceScaler = 16; // Gear ratio plus tuning TODO: Tune
 
   public DriveTrain() {
-    // frontLeft = new CANSparkMax(RobotMap.frontLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    // backLeft = new CANSparkMax(RobotMap.backLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    // frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    // backRight = new CANSparkMax(RobotMap.backRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    frontLeft = new CANSparkMax(RobotMap.frontLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    backLeft = new CANSparkMax(RobotMap.backLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    backRight = new CANSparkMax(RobotMap.backRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    // changeIdleMode(CANSparkMax.IdleMode.kBrake);
+    changeIdleMode(CANSparkMax.IdleMode.kBrake);
     
-    // frontLeftEnc = new CANEncoder(frontLeft);
-    // backLeftEnc = new CANEncoder(backLeft);
-    // backRightEnc = new CANEncoder(backRight);
-    // frontRightEnc = new CANEncoder(frontRight);
+    frontLeftEnc = new CANEncoder(frontLeft);
+    backLeftEnc = new CANEncoder(backLeft);
+    backRightEnc = new CANEncoder(backRight);
+    frontRightEnc = new CANEncoder(frontRight);
 
-    // robotDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
+    robotDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
   }
 
   @Override

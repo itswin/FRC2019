@@ -11,52 +11,26 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
 
-public class LiftCommand extends Command {
-  private boolean wasMoving;
-  public LiftCommand() {
+public class RocketCargoPositioningCommand extends Command {
+  public RocketCargoPositioningCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_lift);
+    // requires(Robot.m_lift);
   }
-
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    wasMoving = false;
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(OI.driveController.getRightTrigger() > 0) {
-      // Right trigger to ascend
-      if(Robot.m_lift.canLeftLiftAscend() && Robot.m_lift.canRightLiftAscend()) {
-        if(!wasMoving) {
-          wasMoving = true;
-          Robot.m_lift.disable();
-        }
-        Robot.m_lift.setPower(-OI.driveController.getRightTrigger());
-      } else {
-        Robot.m_lift.stopLift();
-      }
-    } else if(OI.driveController.getLeftTrigger() > 0) {
-      // Left trigger to descend
-      if(Robot.m_lift.canLeftLiftDescend() && Robot.m_lift.canRightLiftDescend()) {
-        if(!wasMoving) {
-          wasMoving = true;
-          Robot.m_lift.disable();
-        }
-        Robot.m_lift.setPower(OI.driveController.getLeftTrigger());
-      } else {
-        Robot.m_lift.stopLift();
-      }
-    } else {
-      Robot.m_lift.stopLift();
-      if(wasMoving) {
-        wasMoving = false;
-        Robot.m_lift.enable();
-        Robot.m_lift.setSetpoint(Robot.m_lift.getRightLiftEncoder());
-      }
+    if(OI.driveController.povUpButton.get()) {
+      Robot.m_lift.setSetpoint(Robot.m_lift.kThirdRocketCargoHole);
+    } else if(OI.driveController.povRightButton.get()) {
+      Robot.m_lift.setSetpoint(Robot.m_lift.kSecondRocketCargoHole);
+    } else if(OI.driveController.povDownButton.get()) {
+      Robot.m_lift.setSetpoint(Robot.m_lift.kFirstRocketCargoHole);
     }
   }
 
@@ -69,13 +43,11 @@ public class LiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.m_lift.stopLift();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Robot.m_lift.stopLift();
   }
 }

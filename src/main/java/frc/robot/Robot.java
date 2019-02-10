@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.*;
 
 import jaci.pathfinder.*;
@@ -28,11 +27,11 @@ import jaci.pathfinder.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static OI m_oi;
 
   public static final DriveTrain m_driveTrain = new DriveTrain();
   public static final Lift m_lift = new Lift();
+  public static final Intake m_intake = new Intake();
   public static final Paths m_paths = new Paths();
 
   Command m_autonomousCommand;
@@ -45,12 +44,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
+    // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
-
-    // CANSparkMax backLeft = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
-  }
+ }
 
   /**
    * This function is called every robot packet, no matter the mode. Use
