@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
@@ -19,12 +20,16 @@ public class Intake extends Subsystem {
   // here. Call these from Commands.
   private VictorSP frontIntake;
   private VictorSP liftIntake;
+  private DoubleSolenoid intakeSolenoid;
+  public static DoubleSolenoid.Value intakeExtensionState = DoubleSolenoid.Value.kForward;
 
   public Intake() {
     frontIntake = new VictorSP(RobotMap.frontIntakeMotorPort);
     liftIntake = new VictorSP(RobotMap.liftIntakeMotorPort);
+    intakeSolenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOnPort, RobotMap.intakeSolenoidOffPort);
 
     frontIntake.setInverted(true);
+    intakeSolenoid.set(intakeExtensionState);
   }
 
   @Override
@@ -51,5 +56,20 @@ public class Intake extends Subsystem {
   public void setSpeed(double frontIntakeSpeed, double liftIntakeSpeed) {
     frontIntake.set(frontIntakeSpeed);
     liftIntake.set(liftIntakeSpeed);
+  }
+
+  public void extendIntake() {
+    intakeSolenoid.set(DoubleSolenoid.Value.kForward);
+    intakeExtensionState = DoubleSolenoid.Value.kForward;
+  }
+
+  public void retractIntake() {
+    intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
+    intakeExtensionState = DoubleSolenoid.Value.kReverse;
+  }
+
+  public void offIntake() {
+    intakeSolenoid.set(DoubleSolenoid.Value.kOff);
+    intakeExtensionState = DoubleSolenoid.Value.kOff;
   }
 }

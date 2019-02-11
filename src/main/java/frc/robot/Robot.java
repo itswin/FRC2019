@@ -7,16 +7,20 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.vision.VisionThread;
 import frc.robot.subsystems.*;
-
+import frc.vision.DeepSpaceVisionPipeline;
 import jaci.pathfinder.*;
 
 /**
@@ -33,9 +37,16 @@ public class Robot extends TimedRobot {
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final Paths m_paths = new Paths();
+  
+  private UsbCamera camera;
+  private VisionThread visionThread;
+  private static final int kImgHeight = 480;
+  private static final int kImgWidth = 640;
+  private double centerX = 0;
+  private final Object imgLock = new Object();
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  private Command m_autonomousCommand;
+  private SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be
@@ -47,6 +58,22 @@ public class Robot extends TimedRobot {
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+
+    // Camera stuff
+    // camera = CameraServer.getInstance().startAutomaticCapture();
+    // camera.setResolution(kImgWidth, kImgHeight);
+    // camera.setBrightness(75);
+    // camera.setExposureManual(5);
+
+    // visionThread = new VisionThread(camera, new DeepSpaceVisionPipeline(), pipeline -> {
+    //   if (pipeline.filterContoursOutput().size() >= 2) {
+    //     Rect r1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+    //     Rect r2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
+    //       synchronized (imgLock) {
+    //           centerX = ((r1.x + (r1.width / 2)) + (r2.x + (r2.width / 2))) / 2;
+    //       }
+    //   }
+    // });
  }
 
   /**
@@ -59,7 +86,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
+    // System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
+    System.out.println(m_intake.intakeExtensionState);
   }
 
   /**
