@@ -5,33 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.HatchMechanism;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
  * Add your docs here.
  */
-public class ToggleIntakeExtensionCommand extends InstantCommand {
+public class ToggleHatchLauncherState extends InstantCommand {
   /**
    * Add your docs here.
    */
-  public ToggleIntakeExtensionCommand() {
+  public ToggleHatchLauncherState() {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_intake);
+    requires(Robot.m_hatchMechanism);
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    if(Robot.m_intake.intakeExtensionState == Robot.m_intake.intakeRetractedVal) {
-      Robot.m_intake.extendIntake();
+    if(Robot.m_hatchMechanism.getHatchLauncherExtensionState() == Robot.m_hatchMechanism.hatchLauncherRetractedValue) {
+      Robot.m_hatchMechanism.extendHatchLauncher();
     } else {
-      Robot.m_intake.retractIntake();
+      Robot.m_hatchMechanism.retractHatchLauncher();
     }
   }
+
 }

@@ -12,13 +12,13 @@ import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-// import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionThread;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.*;
 import frc.vision.DeepSpaceVisionPipeline;
 import jaci.pathfinder.*;
@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
   public static final DriveTrain m_driveTrain = new DriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
+  public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
   public static final Paths m_paths = new Paths();
   
   private UsbCamera camera;
@@ -47,6 +48,8 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+  private DigitalInput limitSwitch;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -74,6 +77,7 @@ public class Robot extends TimedRobot {
     //       }
     //   }
     // });
+    // limitSwitch = new DigitalInput(0);
  }
 
   /**
@@ -86,8 +90,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
-    System.out.println(m_intake.intakeExtensionState);
+    System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
+    // System.out.println(m_lift.getLeftLimitSwitchVal() + " " + m_lift.getRightLimitSwitchVal());
   }
 
   /**
@@ -97,6 +101,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    Robot.m_intake.retractIntake();
   }
 
   @Override

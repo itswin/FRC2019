@@ -43,7 +43,7 @@ public class DriveTrain extends Subsystem {
     frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     backRight = new CANSparkMax(RobotMap.backRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    changeIdleMode(CANSparkMax.IdleMode.kBrake);
+    changeIdleMode(CANSparkMax.IdleMode.kCoast);
     
     frontLeftEnc = new CANEncoder(frontLeft);
     backLeftEnc = new CANEncoder(backLeft);
@@ -74,6 +74,8 @@ public class DriveTrain extends Subsystem {
 
   public void setSlaveMode(boolean isSlaveMode) {
     // TODO? Can we unset slave mode?
+    // Winston try harder
+    // Nick was here
   }
 
   public void resetEncoders() {

@@ -9,6 +9,7 @@ package frc.robot;
 
 import frc.controllers.LogitechController;
 import frc.robot.commands.*;
+import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
 import frc.robot.commands.Intake.*;
 
@@ -49,18 +50,24 @@ public class OI {
   public OI() {
     driveController = new LogitechController(0);
 
-    driveController.rightBumperButton.whenPressed(new ClearSchedulerCommand());
+    // driveController.rightBumperButton.whenPressed(new ClearSchedulerCommand());
     // driveController.leftBumperButton.whenPressed(new SwitchMotorTypeCommand());
 
+    // Intake
     driveController.rightBumperButton.whileActive(new IntakeCommand());
     driveController.rightBumperButton.whenReleased(new IntakeSmoothStopCommand());
     driveController.leftBumperButton.whileActive(new OuttakeCommand());
     driveController.leftBumperButton.whenReleased(new StopIntakeCommand());
+    driveController.xButton.whenPressed(new ToggleIntakeExtensionCommand());
 
+    // Lift
     driveController.aButton.whileActive(new RocketCargoPositioningCommand());
     driveController.aButton.whenInactive(new RocketHatchPositioningCommand());
     driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
 
-    driveController.xButton.whenPressed(new ToggleIntakeExtensionCommand());
+    // Hatch Mechanism
+    driveController.yButton.whenPressed(new ToggleHatchLauncherState());
+    driveController.yButton.whenReleased(new ToggleHatchLauncherState());
+    driveController.bButton.whenPressed(new ToggleHatchExtenderState());
   }
 }

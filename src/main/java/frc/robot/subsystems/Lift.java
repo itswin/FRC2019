@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -25,10 +26,15 @@ public class Lift extends PIDSubsystem {
   private CANEncoder leftLiftEncoder;
   private CANEncoder rightLiftEncoder;
 
+  private CANDigitalInput leftLiftLimitSwitch;
+  private CANDigitalInput rightLiftLimitSwitch;
+
   private final double minLeftLiftEncoderValue = -100; // -100
   private final double maxLeftLiftEncoderValue = 1; // 1
   private final double minRightLiftEncoderValue = -1; // -1
   private final double maxRightLiftEncoderValue = 100; // 100
+  private double leftLiftEncoderComparison = 0;
+  private double rightLiftEncoderComparison = 0;
 
   public static final double kHome = 0;
   public static final double kFirstRocketCargoHole = 30;
@@ -46,7 +52,7 @@ public class Lift extends PIDSubsystem {
    */
   public Lift() {
     // Intert a subsystem name and PID values here
-    super("Lift", .05, 0, 0, 0, .01);
+    super("Lift", .1, 0, 0, 0, .01);
     // Use these to get going:
     // setSetpoint() - Sets where the PID controller should move the system
     // to
@@ -57,6 +63,9 @@ public class Lift extends PIDSubsystem {
 
     leftLiftEncoder = new CANEncoder(leftLiftMotor);
     rightLiftEncoder = new CANEncoder(rightLiftMotor);
+
+    leftLiftLimitSwitch = leftLiftMotor.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+    rightLiftLimitSwitch = rightLiftMotor.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
 
     leftLiftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     rightLiftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -83,7 +92,7 @@ public class Lift extends PIDSubsystem {
     // Return your input value for the PID loop
     // e.g. a sensor, like a potentiometer:
     // yourPot.getAverageVoltage() / kYourMaxVoltage;
-    return getRightLiftEncoder();
+    return getEncoderAverage();
   }
 
   @Override
@@ -108,11 +117,23 @@ public class Lift extends PIDSubsystem {
   }
   
   public double getLeftLiftEncoder() {
-    return leftLiftEncoder.getPosition();
+    return leftLiftEncoder.getPosition() - leftLiftEncoderComparison;
   }
 
   public double getRightLiftEncoder() {
+    return rightLiftEncoder.getPosition() - rightLiftEncoderComparison;
+  }
+
+  public double getTrueLeftLiftEncoder() {
+    return leftLiftEncoder.getPosition();
+  }
+
+  public double getTrueRightLiftEncoder() {
     return rightLiftEncoder.getPosition();
+  }
+
+  public double getEncoderAverage() {
+    return (getRightLiftEncoder() - getLeftLiftEncoder()) / 2;
   }
 
   public boolean canLeftLiftAscend() {
@@ -133,5 +154,18 @@ public class Lift extends PIDSubsystem {
 
   public double getMaxRightLiftEncoderValue() {
     return maxRightLiftEncoderValue;
+  }
+
+  public boolean getLeftLimitSwitchVal() {
+    return leftLiftLimitSwitch.get();
+  }
+
+  public boolean getRightLimitSwitchVal() {
+    return rightLiftLimitSwitch.get();
+  }
+
+  public void setEncoderComparisons(double leftComparison, double rightComparison) {
+    leftLiftEncoderComparison = leftComparison;
+    rightLiftEncoderComparison = rightComparison;
   }
 }

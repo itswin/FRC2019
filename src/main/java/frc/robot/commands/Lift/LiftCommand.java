@@ -55,8 +55,12 @@ public class LiftCommand extends Command {
       if(wasMoving) {
         wasMoving = false;
         Robot.m_lift.enable();
-        Robot.m_lift.setSetpoint(Robot.m_lift.getRightLiftEncoder());
+        Robot.m_lift.setSetpoint(Robot.m_lift.getEncoderAverage());
       }
+    }
+
+    if(Robot.m_lift.getLeftLimitSwitchVal() && Robot.m_lift.getRightLimitSwitchVal()) {
+      Robot.m_lift.setEncoderComparisons(Robot.m_lift.getTrueLeftLiftEncoder(), Robot.m_lift.getTrueRightLiftEncoder());
     }
   }
 

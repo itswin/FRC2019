@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class IntakeSmoothStopCommand extends Command {
-  private final double startingIntakeSpeed = .3;
+  private final double startingIntakeSpeed = -.3;
   private final double speedDelta = .005;
   private int count;
   private double currentIntakeSpeed;
@@ -34,7 +34,7 @@ public class IntakeSmoothStopCommand extends Command {
   protected void execute() {
     Robot.m_intake.setSpeed(currentIntakeSpeed, currentIntakeSpeed);
 
-    currentIntakeSpeed -= speedDelta;
+    currentIntakeSpeed += speedDelta;
     count++;
   }
 

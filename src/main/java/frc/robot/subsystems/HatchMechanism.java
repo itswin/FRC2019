@@ -12,27 +12,57 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 import frc.robot.commands.HatchMechanism.*;
 
-/**
- * Add your docs here.
- */
 public class HatchMechanism extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
   private DoubleSolenoid hatchLauncherSolenoid;
   private DoubleSolenoid hatchExtenderSolenoid;
 
+  public final static DoubleSolenoid.Value hatchLauncherRetractedValue = DoubleSolenoid.Value.kForward;
+  public final static DoubleSolenoid.Value hatchLauncherExtendedValue = DoubleSolenoid.Value.kReverse;
+  private DoubleSolenoid.Value hatchLauncherExtensionState = hatchLauncherRetractedValue;
+  public final static DoubleSolenoid.Value hatchExtenderRetractedValue = DoubleSolenoid.Value.kReverse;
+  public final static DoubleSolenoid.Value hatchExtenderExtendedValue = DoubleSolenoid.Value.kForward;
+  private DoubleSolenoid.Value hatchExtenderExtensionState = hatchExtenderRetractedValue;
+
   public HatchMechanism() {
     hatchLauncherSolenoid = new DoubleSolenoid(RobotMap.hatchLauncherSolenoidOnPort, RobotMap.hatchLauncherSolenoidOffPort);
-    hatchExtenderSolenoid = new DoubleSolenoid(RobotMap.hatchExtenderSolenoidOnPort, RobotMap.hatchExtenderSolenoidOnPort);
+    hatchExtenderSolenoid = new DoubleSolenoid(RobotMap.hatchExtenderSolenoidOnPort, RobotMap.hatchExtenderSolenoidOffPort);
 
-    hatchLauncherSolenoid.set(DoubleSolenoid.Value.kOff);
-    hatchExtenderSolenoid.set(DoubleSolenoid.Value.kOff);
+    hatchLauncherSolenoid.set(hatchLauncherExtensionState);
+    hatchExtenderSolenoid.set(hatchExtenderExtensionState);
   }
 
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
-    setDefaultCommand(new HatchMechanismCommand());
+    // setDefaultCommand(new HatchMechanismCommand());
+  }
+
+  public DoubleSolenoid.Value getHatchLauncherExtensionState() {
+    return hatchLauncherExtensionState;
+  }
+
+  public void retractHatchLauncher() {
+    hatchLauncherExtensionState = hatchLauncherRetractedValue;
+    hatchLauncherSolenoid.set(hatchLauncherExtensionState);
+  }
+
+  public void extendHatchLauncher() {
+    hatchLauncherExtensionState = hatchLauncherExtendedValue;
+    hatchLauncherSolenoid.set(hatchLauncherExtensionState);
+  }
+
+  public DoubleSolenoid.Value getHatchExtenderExtensionState() {
+    return hatchExtenderExtensionState;
+  }
+
+  public void retractHatchExtender() {
+    hatchExtenderExtensionState = hatchExtenderRetractedValue;
+    hatchExtenderSolenoid.set(hatchExtenderExtensionState);
+  }
+
+  public void extendHatchExtender() {
+    hatchExtenderExtensionState = hatchExtenderExtendedValue;
+    hatchExtenderSolenoid.set(hatchExtenderExtensionState);
   }
 }

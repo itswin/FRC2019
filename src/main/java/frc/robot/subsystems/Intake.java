@@ -21,14 +21,15 @@ public class Intake extends Subsystem {
   private VictorSP frontIntake;
   private VictorSP liftIntake;
   private DoubleSolenoid intakeSolenoid;
-  public static DoubleSolenoid.Value intakeExtensionState = DoubleSolenoid.Value.kForward;
+  public static final DoubleSolenoid.Value intakeRetractedVal = DoubleSolenoid.Value.kReverse;
+  public static final DoubleSolenoid.Value intakeExtendedVal = DoubleSolenoid.Value.kForward;
+  public static DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
 
   public Intake() {
     frontIntake = new VictorSP(RobotMap.frontIntakeMotorPort);
     liftIntake = new VictorSP(RobotMap.liftIntakeMotorPort);
     intakeSolenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOnPort, RobotMap.intakeSolenoidOffPort);
 
-    frontIntake.setInverted(true);
     intakeSolenoid.set(intakeExtensionState);
   }
 
@@ -39,13 +40,13 @@ public class Intake extends Subsystem {
   }
 
   public void intake() {
-    frontIntake.set(1);
-    liftIntake.set(.3);
+    frontIntake.set(-1);
+    liftIntake.set(-.3);
   }
 
   public void outtake() {
-    frontIntake.set(-1);
-    liftIntake.set(-1);
+    frontIntake.set(1);
+    liftIntake.set(1);
   }
 
   public void stopIntake() {
@@ -59,13 +60,13 @@ public class Intake extends Subsystem {
   }
 
   public void extendIntake() {
-    intakeSolenoid.set(DoubleSolenoid.Value.kForward);
-    intakeExtensionState = DoubleSolenoid.Value.kForward;
+    intakeExtensionState = intakeExtendedVal;
+    intakeSolenoid.set(intakeExtensionState);
   }
 
   public void retractIntake() {
-    intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
-    intakeExtensionState = DoubleSolenoid.Value.kReverse;
+    intakeExtensionState = intakeRetractedVal;
+    intakeSolenoid.set(intakeExtensionState);
   }
 
   public void offIntake() {
