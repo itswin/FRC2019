@@ -23,6 +23,7 @@ public class LogitechController {
     public POVButton povDownButton;
     public POVButton povRightButton;
     public POVButton povUpButton;
+    public POVButton povLeftButton;
 
     public LogitechController(int port) {
         m_stick = new Joystick(port);
@@ -36,6 +37,7 @@ public class LogitechController {
         povDownButton = new POVButton(m_stick, 180, 0);
         povRightButton = new POVButton(m_stick, 90, 0);
         povUpButton = new POVButton(m_stick, 0, 0);
+        povLeftButton = new POVButton(m_stick, 270, 0);
     }
 
     public double getLeftXAxis() {

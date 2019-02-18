@@ -9,6 +9,7 @@ package frc.robot;
 
 import frc.controllers.LogitechController;
 import frc.robot.commands.*;
+import frc.robot.commands.DriveTrain.*;
 import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
 import frc.robot.commands.Intake.*;
@@ -62,12 +63,15 @@ public class OI {
 
     // Lift
     driveController.aButton.whileActive(new RocketCargoPositioningCommand());
-    driveController.aButton.whenInactive(new RocketHatchPositioningCommand());
+    // driveController.aButton.whenInactive(new RocketHatchPositioningCommand());
+    driveController.aButton.whenReleased(new RocketHatchPositioningCommand());
     driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
 
     // Hatch Mechanism
     driveController.yButton.whenPressed(new ToggleHatchLauncherState());
     driveController.yButton.whenReleased(new ToggleHatchLauncherState());
     driveController.bButton.whenPressed(new ToggleHatchExtenderState());
+
+    driveController.povLeftButton.whenPressed(new Rotate180Command());
   }
 }

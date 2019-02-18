@@ -25,6 +25,8 @@ public class Intake extends Subsystem {
   public static final DoubleSolenoid.Value intakeExtendedVal = DoubleSolenoid.Value.kForward;
   public static DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
 
+  public static final double k_liftIntakeSpeed = -1;
+
   public Intake() {
     frontIntake = new VictorSP(RobotMap.frontIntakeMotorPort);
     liftIntake = new VictorSP(RobotMap.liftIntakeMotorPort);
@@ -41,7 +43,7 @@ public class Intake extends Subsystem {
 
   public void intake() {
     frontIntake.set(-1);
-    liftIntake.set(-.3);
+    liftIntake.set(k_liftIntakeSpeed);
   }
 
   public void outtake() {

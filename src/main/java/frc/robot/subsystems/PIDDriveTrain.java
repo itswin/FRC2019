@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,16 +7,21 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+
+import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import com.revrobotics.*;
-
+import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.DriveTrain.*;
+import frc.robot.commands.DriveTrain.PIDDriveTrainCommand;
 
-import jaci.pathfinder.*;
-
-public class DriveTrain extends Subsystem {
+/**
+ * Add your docs here.
+ */
+public class PIDDriveTrain extends PIDSubsystem {
+  
   // Motors
   private CANSparkMax frontLeft;
   private CANSparkMax backLeft;
@@ -37,7 +42,21 @@ public class DriveTrain extends Subsystem {
   public final double kPulsesPerRevolution = 360; // TODO: CHANGE?
   public final double kDistanceScaler = 16; // Gear ratio plus tuning TODO: Tune
 
-  public DriveTrain() {
+  private final double kAbsoluteTolerance = 2;
+  private final double kPercentTolerance = 1;
+
+  private double rotationSpeed = 0;
+
+  /**
+   * Add your docs here.
+   */
+  public PIDDriveTrain() {
+    // Intert a subsystem name and PID values here
+    super("PIDDriveTrain", .025, 0, 0, 0, .01);
+    // Use these to get going:
+    // setSetpoint() - Sets where the PID controller should move the system
+    // to
+    // enable() - Enables the PID controller.
     frontLeft = new CANSparkMax(RobotMap.frontLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     backLeft = new CANSparkMax(RobotMap.backLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -51,13 +70,19 @@ public class DriveTrain extends Subsystem {
     frontRightEnc = new CANEncoder(frontRight);
 
     robotDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
+  
+    setOutputRange(-.25, .25);
+    setInputRange(-360, 360);
+    setAbsoluteTolerance(kAbsoluteTolerance);
+    setPercentTolerance(kPercentTolerance);
+    enable();
   }
 
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
-    // setDefaultCommand(new DriveTrainCommand());
+    setDefaultCommand(new PIDDriveTrainCommand());
   }
 
   public void drive(double speed, double strafe, double rotation) {
@@ -70,12 +95,6 @@ public class DriveTrain extends Subsystem {
 
   public void stopDriveTrain() {
     robotDrive.driveCartesian(0, 0, 0);
-  }
-
-  public void setSlaveMode(boolean isSlaveMode) {
-    // TODO? Can we unset slave mode?
-    // Winston try harder
-    // Nick was here
   }
 
   public void resetEncoders() {
@@ -126,5 +145,29 @@ public class DriveTrain extends Subsystem {
     backRight.setIdleMode(idleMode);
 
     currentIdleMode = idleMode;
+  }
+
+  @Override
+  protected double returnPIDInput() {
+    // Return your input value for the PID loop
+    // e.g. a sensor, like a potentiometer:
+    // yourPot.getAverageVoltage() / kYourMaxVoltage;
+    return Robot.m_navX.getAngle() % 360;
+  }
+
+  @Override
+  protected void usePIDOutput(double output) {
+    // Use output to drive your system, like a motor
+    // e.g. yourMotor.set(output);
+    rotationSpeed = output;
+    // System.out.println("Output: " + output);
+  }
+
+  public double getRotationSpeed() {
+    return rotationSpeed;
+  }
+
+  public void setSetpoint360(double setpoint) {
+    setSetpoint(setpoint % 360);
   }
 }

@@ -7,11 +7,14 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -33,7 +36,20 @@ import jaci.pathfinder.*;
 public class Robot extends TimedRobot {
   public static OI m_oi;
 
-  public static final DriveTrain m_driveTrain = new DriveTrain();
+  public static AHRS m_navX;
+  static {
+    try {
+      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+      m_navX = new AHRS(SerialPort.Port.kUSB); 
+    } catch (RuntimeException ex ) {
+      System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
+    }
+  }
+
+  public static final DriveTrain m_driveTrain = null;
+  public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
@@ -46,10 +62,9 @@ public class Robot extends TimedRobot {
   private double centerX = 0;
   private final Object imgLock = new Object();
 
+
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
-
-  private DigitalInput limitSwitch;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -77,7 +92,8 @@ public class Robot extends TimedRobot {
     //       }
     //   }
     // });
-    // limitSwitch = new DigitalInput(0);
+    
+    
  }
 
   /**
@@ -90,8 +106,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
+    // System.out.println(String.format("Lift Encoders: %f.3 \t %f.3", m_lift.getLeftLiftEncoder(), m_lift.getRightLiftEncoder()));
     // System.out.println(m_lift.getLeftLimitSwitchVal() + " " + m_lift.getRightLimitSwitchVal());
+    // System.out.println("Delta angle: " + m_navX.getAngle());
+    // System.out.println("Setpoint a: " + m_pidDriveTrain.getSetpoint());
   }
 
   /**
@@ -102,6 +120,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     Robot.m_intake.retractIntake();
+    Robot.m_hatchMechanism.retractHatchExtender();
   }
 
   @Override
@@ -154,6 +173,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
   }
 
   /**
