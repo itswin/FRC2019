@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.buttons.POVButton;
 public class LogitechController {
     
     private Joystick m_stick;
-    private final static double deadband = .05;
+    private final static double deadband = .02;
 
     public JoystickButton aButton;
     public JoystickButton bButton;

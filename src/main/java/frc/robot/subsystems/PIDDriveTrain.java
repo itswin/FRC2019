@@ -28,6 +28,8 @@ public class PIDDriveTrain extends PIDSubsystem {
   private CANSparkMax frontRight;
   private CANSparkMax backRight;
 
+  private final int kCurrentLimit = 35;
+
   private CANSparkMax.IdleMode currentIdleMode;
 
   private MecanumDrive robotDrive;
@@ -61,6 +63,11 @@ public class PIDDriveTrain extends PIDSubsystem {
     backLeft = new CANSparkMax(RobotMap.backLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     backRight = new CANSparkMax(RobotMap.backRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    frontLeft.setSmartCurrentLimit(kCurrentLimit);
+    frontRight.setSmartCurrentLimit(kCurrentLimit);
+    backLeft.setSmartCurrentLimit(kCurrentLimit);
+    backRight.setSmartCurrentLimit(kCurrentLimit);
 
     changeIdleMode(CANSparkMax.IdleMode.kCoast);
     

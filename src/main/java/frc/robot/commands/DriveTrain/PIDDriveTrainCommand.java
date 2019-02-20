@@ -14,6 +14,11 @@ public class PIDDriveTrainCommand extends Command {
   private boolean wasMoving;
   private final double rotationScalar = .75;
 
+  private double currentSpeed = 0;
+  private double currentStrafe = 0;
+  private double currentRotation = 0;
+  private final double kMaxSpeedDeltaPerLoop = .1;
+
   public PIDDriveTrainCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
@@ -37,14 +42,16 @@ public class PIDDriveTrainCommand extends Command {
     double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
     double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
 
+    // Square the values to make driving less sensitive
+    // speed = speed * speed * Math.signum(speed);
+    // strafe = strafe * strafe * Math.signum(strafe);
+    rotation = rotation*rotation * Math.signum(rotation);
+
     if(rotation != 0) {
       if(!wasMoving) {
         wasMoving = true;
         Robot.m_pidDriveTrain.disable();
       }
-
-      // Square the rotation to make it less sensitive
-      rotation = Math.signum(rotation)*rotation*rotation;
     } else {
       if(wasMoving) {
         wasMoving = false;
@@ -54,10 +61,43 @@ public class PIDDriveTrainCommand extends Command {
       rotation = Robot.m_pidDriveTrain.getRotationSpeed();
     }
 
+    /*
+    // Limit the rate you can change speed for all directions
+    if(speed > currentSpeed + kMaxSpeedDeltaPerLoop) {
+      currentSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(speed < currentSpeed - kMaxSpeedDeltaPerLoop) {
+      currentSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentSpeed = speed;
+    }
+
+    if(strafe > currentStrafe + kMaxSpeedDeltaPerLoop) {
+      currentStrafe += kMaxSpeedDeltaPerLoop;
+    } else if(strafe < currentStrafe - kMaxSpeedDeltaPerLoop) {
+      currentStrafe -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentStrafe = speed;
+    }
+
+    if(rotation > currentRotation + kMaxSpeedDeltaPerLoop) {
+      currentRotation += kMaxSpeedDeltaPerLoop;
+    } else if(rotation < currentRotation - kMaxSpeedDeltaPerLoop) {
+      currentRotation -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentRotation = rotation;
+    } */
+    
+
+    currentSpeed = speed;
+    currentStrafe = strafe;
+    currentRotation = rotation;
+
     // System.out.println("Rotation speed: " + rotation);
 
     // With angle
-    Robot.m_pidDriveTrain.drive(speed, strafe, rotation);
+    Robot.m_pidDriveTrain.drive(currentSpeed, currentStrafe, currentRotation);
+
+    System.out.println(currentSpeed + ", " + currentStrafe + ", " + currentRotation);
 
     // Without angle
     // Robot.m_pidDriveTrain.drive(speed, strafe, rotation, -Robot.m_navX.getAngle());
@@ -72,6 +112,9 @@ public class PIDDriveTrainCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    currentSpeed = 0;
+    currentStrafe = 0;
+    currentRotation = 0;
     Robot.m_pidDriveTrain.stopDriveTrain();
   }
 
@@ -79,6 +122,9 @@ public class PIDDriveTrainCommand extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    currentSpeed = 0;
+    currentStrafe = 0;
+    currentRotation = 0;
     Robot.m_pidDriveTrain.stopDriveTrain();
   }
 }

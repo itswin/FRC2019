@@ -71,7 +71,5 @@ public class OI {
     driveController.yButton.whenPressed(new ToggleHatchLauncherState());
     driveController.yButton.whenReleased(new ToggleHatchLauncherState());
     driveController.bButton.whenPressed(new ToggleHatchExtenderState());
-
-    driveController.povLeftButton.whenPressed(new Rotate180Command());
   }
 }

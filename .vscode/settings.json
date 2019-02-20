@@ -11,5 +11,6 @@
     ".project": true
   },
   "wpilib.online": true,
-  "git.decorations.enabled": false
+  "git.decorations.enabled": false,
+  "git.ignoreLimitWarning": true
 }
