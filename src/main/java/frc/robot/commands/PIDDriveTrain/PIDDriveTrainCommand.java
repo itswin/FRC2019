@@ -13,11 +13,9 @@ import frc.robot.Robot;
 public class PIDDriveTrainCommand extends Command {
   private boolean wasMoving;
   private final double rotationScalar = .75;
-
-  private double currentSpeed = 0;
-  private double currentStrafe = 0;
-  private double currentRotation = 0;
   private final double kMaxSpeedDeltaPerLoop = .1;
+
+  private final boolean rampRateEnabled = false;
 
   public PIDDriveTrainCommand() {
     // Use requires() here to declare subsystem dependencies
@@ -36,18 +34,15 @@ public class PIDDriveTrainCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
+    double inputSpeed = Robot.m_pidDriveTrain.getInputSpeed();
+    double inputStrafeSpeed = Robot.m_pidDriveTrain.getInputStrafeSpeed();
+    double inputRotationSpeed = Robot.m_pidDriveTrain.getInputRotationSpeed();
 
-    double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
-    double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
-    double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
+    double currentSpeed = Robot.m_pidDriveTrain.getCurrentSpeed();
+    double currentStrafeSpeed = Robot.m_pidDriveTrain.getCurrentStrafeSpeed();
+    double currentRotationSpeed = Robot.m_pidDriveTrain.getCurrentRotationSpeed();
 
-    // Square the values to make driving less sensitive
-    // speed = speed * speed * Math.signum(speed);
-    // strafe = strafe * strafe * Math.signum(strafe);
-    rotation = rotation*rotation * Math.signum(rotation);
-
-    if(rotation != 0) {
+    if(inputRotationSpeed != 0) {
       if(!wasMoving) {
         wasMoving = true;
         Robot.m_pidDriveTrain.disable();
@@ -58,49 +53,43 @@ public class PIDDriveTrainCommand extends Command {
         Robot.m_pidDriveTrain.setSetpoint360(Robot.m_navX.getAngle());
         Robot.m_pidDriveTrain.enable();
       }
-      rotation = Robot.m_pidDriveTrain.getRotationSpeed();
+
+      inputRotationSpeed = Robot.m_pidDriveTrain.getPidRotationSpeed();
     }
 
-    /*
+    
     // Limit the rate you can change speed for all directions
-    if(speed > currentSpeed + kMaxSpeedDeltaPerLoop) {
+    if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
       currentSpeed += kMaxSpeedDeltaPerLoop;
-    } else if(speed < currentSpeed - kMaxSpeedDeltaPerLoop) {
+    } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {
       currentSpeed -= kMaxSpeedDeltaPerLoop;
     } else {
-      currentSpeed = speed;
+      currentSpeed = inputSpeed;
     }
 
-    if(strafe > currentStrafe + kMaxSpeedDeltaPerLoop) {
-      currentStrafe += kMaxSpeedDeltaPerLoop;
-    } else if(strafe < currentStrafe - kMaxSpeedDeltaPerLoop) {
-      currentStrafe -= kMaxSpeedDeltaPerLoop;
+    if(rampRateEnabled && inputStrafeSpeed > currentStrafeSpeed + kMaxSpeedDeltaPerLoop) {
+      currentStrafeSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputStrafeSpeed < currentStrafeSpeed - kMaxSpeedDeltaPerLoop) {
+      currentStrafeSpeed -= kMaxSpeedDeltaPerLoop;
     } else {
-      currentStrafe = speed;
+      currentStrafeSpeed = inputStrafeSpeed;
     }
 
-    if(rotation > currentRotation + kMaxSpeedDeltaPerLoop) {
-      currentRotation += kMaxSpeedDeltaPerLoop;
-    } else if(rotation < currentRotation - kMaxSpeedDeltaPerLoop) {
-      currentRotation -= kMaxSpeedDeltaPerLoop;
+    if(rampRateEnabled && inputRotationSpeed > currentRotationSpeed + kMaxSpeedDeltaPerLoop) {
+      currentRotationSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputRotationSpeed < currentRotationSpeed - kMaxSpeedDeltaPerLoop) {
+      currentRotationSpeed -= kMaxSpeedDeltaPerLoop;
     } else {
-      currentRotation = rotation;
-    } */
+      currentRotationSpeed = inputRotationSpeed;
+    }
     
-
-    currentSpeed = speed;
-    currentStrafe = strafe;
-    currentRotation = rotation;
-
-    // System.out.println("Rotation speed: " + rotation);
-
-    // With angle
-    Robot.m_pidDriveTrain.drive(currentSpeed, currentStrafe, currentRotation);
-
-    System.out.println(currentSpeed + ", " + currentStrafe + ", " + currentRotation);
+    Robot.m_pidDriveTrain.setCurrentSpeeds(currentRotationSpeed, currentStrafeSpeed, currentRotationSpeed);
 
     // Without angle
-    // Robot.m_pidDriveTrain.drive(speed, strafe, rotation, -Robot.m_navX.getAngle());
+    Robot.m_pidDriveTrain.drive(Robot.m_pidDriveTrain.getCurrentSpeed(), Robot.m_pidDriveTrain.getCurrentStrafeSpeed(), Robot.m_pidDriveTrain.getCurrentRotationSpeed());
+
+    // With angle
+    // Robot.m_pidDriveTrain.drive(Robot.m_pidDriveTrain.getCurrentSpeed(), Robot.m_pidDriveTrain.getCurrentStrafeSpeed(), Robot.m_pidDriveTrain.getCurrentRotationSpeed(), -Robot.m_navX.getAngle());
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -112,9 +101,6 @@ public class PIDDriveTrainCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    currentSpeed = 0;
-    currentStrafe = 0;
-    currentRotation = 0;
     Robot.m_pidDriveTrain.stopDriveTrain();
   }
 
@@ -122,9 +108,6 @@ public class PIDDriveTrainCommand extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    currentSpeed = 0;
-    currentStrafe = 0;
-    currentRotation = 0;
     Robot.m_pidDriveTrain.stopDriveTrain();
   }
 }

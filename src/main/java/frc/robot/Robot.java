@@ -54,12 +54,12 @@ public class Robot extends TimedRobot {
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
   public static final Paths m_paths = new Paths();
   
-  private UsbCamera camera;
-  private VisionThread visionThread;
-  private static final int kImgHeight = 480;
-  private static final int kImgWidth = 640;
-  private double centerX = 0;
-  private final Object imgLock = new Object();
+  // private UsbCamera camera;
+  // private VisionThread visionThread;
+  // private static final int kImgHeight = 480;
+  // private static final int kImgWidth = 640;
+  // private double centerX = 0;
+  // private final Object imgLock = new Object();
 
 
   private Command m_autonomousCommand;
@@ -91,8 +91,6 @@ public class Robot extends TimedRobot {
     //       }
     //   }
     // });
-    
-    
  }
 
   /**
@@ -120,6 +118,8 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     Robot.m_intake.retractIntake();
     Robot.m_hatchMechanism.retractHatchExtender();
+    Robot.m_pidDriveTrain.stopDriveTrain();
+    Robot.m_lift.setSetpoint(Robot.m_lift.kHome);
   }
 
   @Override
@@ -161,6 +161,22 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+
+    // Slow down rotation
+    double rotationScalar = .75;
+    // Slow down when lift is up
+    double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
+
+    double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
+    double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
+    double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
+    
+    // Square the values to make driving less sensitive
+    // speed = speed * speed * Math.signum(speed);
+    // strafe = strafe * strafe * Math.signum(strafe);
+    rotation = rotation*rotation * Math.signum(rotation);
+
+    m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
   }
 
   @Override
@@ -181,6 +197,22 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    
+    // Slow down rotation
+    double rotationScalar = .75;
+    // Slow down when lift is up
+    double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
+
+    double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
+    double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
+    double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
+    
+    // Square the values to make driving less sensitive
+    // speed = speed * speed * Math.signum(speed);
+    // strafe = strafe * strafe * Math.signum(strafe);
+    rotation = rotation*rotation * Math.signum(rotation);
+
+    m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
   }
 
   /**

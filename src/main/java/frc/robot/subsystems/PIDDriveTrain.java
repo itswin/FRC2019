@@ -47,7 +47,15 @@ public class PIDDriveTrain extends PIDSubsystem {
   private final double kAbsoluteTolerance = 2;
   private final double kPercentTolerance = 1;
 
-  private double rotationSpeed = 0;
+  private double inputSpeed = 0;
+  private double inputStrafeSpeed = 0;
+  private double inputRotationSpeed = 0;
+
+  private double currentSpeed = 0;
+  private double currentStrafeSpeed = 0;
+  private double currentRotationSpeed = 0;
+
+  private double pidRotationSpeed = 0;
 
   /**
    * Add your docs here.
@@ -101,6 +109,11 @@ public class PIDDriveTrain extends PIDSubsystem {
   }
 
   public void stopDriveTrain() {
+    setSetpoint360(Robot.m_navX.getAngle());
+
+    currentSpeed = 0;
+    currentStrafeSpeed = 0;
+    currentRotationSpeed = 0;
     robotDrive.driveCartesian(0, 0, 0);
   }
 
@@ -166,15 +179,63 @@ public class PIDDriveTrain extends PIDSubsystem {
   protected void usePIDOutput(double output) {
     // Use output to drive your system, like a motor
     // e.g. yourMotor.set(output);
-    rotationSpeed = output;
+    pidRotationSpeed = output;
     // System.out.println("Output: " + output);
   }
 
-  public double getRotationSpeed() {
-    return rotationSpeed;
+  public double getPidRotationSpeed() {
+    return pidRotationSpeed;
   }
 
   public void setSetpoint360(double setpoint) {
     setSetpoint(setpoint % 360);
+  }
+
+  public void setInputSpeeds(double speed, double strafe, double rotation) {
+    inputSpeed = speed;
+    inputStrafeSpeed = strafe;
+    inputRotationSpeed = rotation;
+  }
+
+  public double getInputSpeed() {
+    return inputSpeed;
+  }
+
+  public double getInputStrafeSpeed() {
+    return inputStrafeSpeed;
+  }
+
+  public double getInputRotationSpeed() {
+    return inputRotationSpeed;
+  }
+
+  public double getCurrentSpeed() {
+    return currentSpeed;
+  }
+
+  public double getCurrentStrafeSpeed() {
+    return currentStrafeSpeed;
+  }
+
+  public double getCurrentRotationSpeed() {
+    return currentRotationSpeed;
+  }
+
+  public void setCurrentSpeeds(double speed, double strafe, double rotation) {
+    currentSpeed = speed;
+    currentStrafeSpeed = strafe;
+    currentRotationSpeed = rotation;
+  }
+
+  public void setCurrentSpeed(double speed) {
+    currentSpeed = speed;
+  }
+
+  public void setCurrentStrafeSpeed(double strafe) {
+    currentStrafeSpeed = strafe;
+  }
+
+  public void setCurrentRotationSpeed(double rotation) {
+    currentRotationSpeed = rotation;
   }
 }
