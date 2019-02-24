@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.commands.Lift.RocketHatchPositioningCommand;
 import frc.robot.subsystems.*;
 import frc.vision.DeepSpaceVisionPipeline;
 import jaci.pathfinder.*;
@@ -61,7 +62,6 @@ public class Robot extends TimedRobot {
   // private double centerX = 0;
   // private final Object imgLock = new Object();
 
-
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
 
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     //       }
     //   }
     // });
- }
+  }
 
   /**
    * This function is called every robot packet, no matter the mode. Use
@@ -140,6 +140,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    // This command needs to be started manually once
+    Scheduler.getInstance().add(new RocketHatchPositioningCommand());
+
     m_autonomousCommand = m_chooser.getSelected();
 
     /*
@@ -189,6 +192,9 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+
+    // This command needs to be started manually once
+    Scheduler.getInstance().add(new RocketHatchPositioningCommand());
   }
 
   /**

@@ -51,9 +51,6 @@ public class OI {
   public OI() {
     driveController = new LogitechController(0);
 
-    // driveController.rightBumperButton.whenPressed(new ClearSchedulerCommand());
-    // driveController.leftBumperButton.whenPressed(new SwitchMotorTypeCommand());
-
     // Intake
     driveController.rightBumperButton.whileActive(new IntakeCommand());
     driveController.rightBumperButton.whenReleased(new IntakeSmoothStopCommand());
