@@ -23,7 +23,7 @@ public class ClearSchedulerCommand extends InstantCommand {
     // eg. requires(chassis);
 
     // Require every subsystem to clear all commands
-    requires(Robot.m_driveTrain);
+    requires(Robot.m_pidDriveTrain);
     requires(Robot.m_lift);
   }
 

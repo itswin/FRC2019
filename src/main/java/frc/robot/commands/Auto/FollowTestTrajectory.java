@@ -25,7 +25,7 @@ public class FollowTestTrajectory extends Command {
   public FollowTestTrajectory() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_driveTrain);
+    requires(Robot.m_pidDriveTrain);
 
     File leftFile = new File(kLeftTrajFileName);
     File rightFile = new File(kRightTrajFileName);
@@ -36,7 +36,7 @@ public class FollowTestTrajectory extends Command {
     leftFollower = new EncoderFollower(leftTraj);
     rightFollower = new EncoderFollower(rightTraj);
 
-    leftFollower.configureEncoder(Robot.m_driveTrain.getLeftEncoderAverage(), Robot.m_driveTrain.kPulsesPerRevolution, Robot.m_driveTrain.kWheel_diameter, Robot.m_driveTrain.kDistanceScaler);
+    leftFollower.configureEncoder(Robot.m_pidDriveTrain.getLeftEncoderAverage(), Robot.m_pidDriveTrain.kPulsesPerRevolution, Robot.m_pidDriveTrain.kWheel_diameter, Robot.m_pidDriveTrain.kDistanceScaler);
   }
 
   // Called just before this Command runs the first time
@@ -71,11 +71,10 @@ public class FollowTestTrajectory extends Command {
     @Override
     public void run() {
       if (!leftFollower.isFinished() || !rightFollower.isFinished()) {
-        double l = leftFollower.calculate((int)Robot.m_driveTrain.getLeftEncoderAverage());
-        double r = rightFollower.calculate((int)Robot.m_driveTrain.getRightEncoderAverage());
+        double l = leftFollower.calculate((int)Robot.m_pidDriveTrain.getLeftEncoderAverage());
+        double r = rightFollower.calculate((int)Robot.m_pidDriveTrain.getRightEncoderAverage());
   
-        // double gyro_heading = gyro.getAngle();
-        double gyro_heading = 0;
+        double gyro_heading = Robot.m_navX.getAngle();
         double desired_heading = Pathfinder.r2d(leftFollower.getHeading());
   
         double angleDifference = 0.8 * (-1.0 / 80.0) * Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
@@ -83,11 +82,11 @@ public class FollowTestTrajectory extends Command {
 
         System.out.println(l + turn);
   
-        Robot.m_driveTrain.setLeftSpeed(l + turn);
-        Robot.m_driveTrain.setRightSpeed(r - turn);
+        Robot.m_pidDriveTrain.setLeftSpeed(l + turn);
+        Robot.m_pidDriveTrain.setRightSpeed(r - turn);
       } else {
-        Robot.m_driveTrain.setLeftSpeed(0);
-        Robot.m_driveTrain.setRightSpeed(0);
+        Robot.m_pidDriveTrain.setLeftSpeed(0);
+        Robot.m_pidDriveTrain.setRightSpeed(0);
         autoNotifier.stop();
       }
     }

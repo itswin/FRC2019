@@ -48,7 +48,6 @@ public class Robot extends TimedRobot {
     }
   }
 
-  public static final DriveTrain m_driveTrain = null;
   public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();

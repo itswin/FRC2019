@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.DriveTrain.PIDDriveTrainCommand;
+import frc.robot.commands.PIDDriveTrain.PIDDriveTrainCommand;
 
 /**
  * Add your docs here.
