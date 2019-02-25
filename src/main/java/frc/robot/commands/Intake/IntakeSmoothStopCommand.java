@@ -10,6 +10,10 @@ package frc.robot.commands.Intake;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
+/**
+ * Fakes coast on the intake motors to avoid shooting
+ * the ball out when intake motors stop suddenly
+ */
 public class IntakeSmoothStopCommand extends Command {
   private final double startingIntakeSpeed = Robot.m_intake.k_liftIntakeSpeed;
   private final double speedDelta = .005;

@@ -11,12 +11,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
- * Add your docs here.
+ * Spins motors to intake cargo
  */
 public class IntakeCommand extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
   public IntakeCommand() {
     super();
     // Use requires() here to declare subsystem dependencies

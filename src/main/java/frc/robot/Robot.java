@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
     }
   }
 
+  // Initialize subsystems
   public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
@@ -165,6 +166,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
 
+    // Sends joystick values to PIDDriveTrain
     // Slow down rotation
     double rotationScalar = .75;
     // Slow down when lift is up
@@ -204,6 +206,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     
+    // Sends joystick values to PIDDriveTrain
     // Slow down rotation
     double rotationScalar = .75;
     // Slow down when lift is up

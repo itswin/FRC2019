@@ -60,7 +60,6 @@ public class OI {
 
     // Lift
     driveController.aButton.whileActive(new RocketCargoPositioningCommand());
-    // driveController.aButton.whenInactive(new RocketHatchPositioningCommand());
     driveController.aButton.whenReleased(new RocketHatchPositioningCommand());
     driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
 

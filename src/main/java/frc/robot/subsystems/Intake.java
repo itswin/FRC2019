@@ -13,15 +13,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 import frc.robot.commands.Intake.IntakeBaseCommand;
 
-/**
- * Add your docs here.
- */
 public class Intake extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
   private VictorSP frontIntake;
   private VictorSP liftIntake;
   private DoubleSolenoid intakeSolenoid;
+
+  // Have constants to compare to so magic values aren't floating around
   public static final DoubleSolenoid.Value intakeRetractedVal = DoubleSolenoid.Value.kReverse;
   public static final DoubleSolenoid.Value intakeExtendedVal = DoubleSolenoid.Value.kForward;
   public static DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
@@ -38,10 +35,10 @@ public class Intake extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
     setDefaultCommand(new IntakeBaseCommand());
   }
 
+  // ********** Motor methods ********** //
   public void intake() {
     frontIntake.set(-1);
     liftIntake.set(k_liftIntakeSpeed);
@@ -62,6 +59,7 @@ public class Intake extends Subsystem {
     liftIntake.set(liftIntakeSpeed);
   }
 
+  // ********** Solenoid methods ********** //
   public void extendIntake() {
     intakeExtensionState = intakeExtendedVal;
     intakeSolenoid.set(intakeExtensionState);
@@ -70,10 +68,5 @@ public class Intake extends Subsystem {
   public void retractIntake() {
     intakeExtensionState = intakeRetractedVal;
     intakeSolenoid.set(intakeExtensionState);
-  }
-
-  public void offIntake() {
-    intakeSolenoid.set(DoubleSolenoid.Value.kOff);
-    intakeExtensionState = DoubleSolenoid.Value.kOff;
   }
 }

@@ -30,7 +30,9 @@ public class LiftCommand extends Command {
   protected void execute() {
     if(OI.driveController.getRightTrigger() > 0) {
       // Right trigger to ascend
+      // Programatically stops motors at set encoder limits
       if(Robot.m_lift.canLeftLiftAscend() && Robot.m_lift.canRightLiftAscend()) {
+        // Disables the lift PID if manual input is supplied
         if(!wasMoving) {
           wasMoving = true;
           Robot.m_lift.disable();
@@ -52,6 +54,7 @@ public class LiftCommand extends Command {
       }
     } else {
       Robot.m_lift.stopLift();
+      // Reenables PID if no input is supplied
       if(wasMoving) {
         wasMoving = false;
         Robot.m_lift.enable();
@@ -59,6 +62,7 @@ public class LiftCommand extends Command {
       }
     }
 
+    // Resets encoders when limit switches are hit
     if(Robot.m_lift.getLeftLimitSwitchVal() && Robot.m_lift.getRightLimitSwitchVal()) {
       Robot.m_lift.setEncoderComparisons(Robot.m_lift.getTrueLeftLiftEncoder(), Robot.m_lift.getTrueRightLiftEncoder());
     }

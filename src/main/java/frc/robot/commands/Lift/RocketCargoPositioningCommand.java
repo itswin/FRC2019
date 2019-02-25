@@ -25,6 +25,7 @@ public class RocketCargoPositioningCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    // Uses joystick hat and A button to send lift to cargo setpoints
     if(OI.driveController.povUpButton.get()) {
       Robot.m_lift.setSetpoint(Robot.m_lift.kThirdRocketCargoHole);
     } else if(OI.driveController.povRightButton.get()) {

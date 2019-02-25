@@ -11,12 +11,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
- * Add your docs here.
+ * Spins the motors to shoot cargo
  */
 public class OuttakeCommand extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
   public OuttakeCommand() {
     super();
     // Use requires() here to declare subsystem dependencies

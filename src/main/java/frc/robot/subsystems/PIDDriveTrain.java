@@ -18,7 +18,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.PIDDriveTrain.PIDDriveTrainCommand;
 
 /**
- * Add your docs here.
+ * Create drivetrain as PID to fix strafing using the navX gyro
  */
 public class PIDDriveTrain extends PIDSubsystem {
   
@@ -34,39 +34,36 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   private MecanumDrive robotDrive;
 
-  // Encoders
   private CANEncoder frontLeftEnc;
   private CANEncoder backLeftEnc;
   private CANEncoder backRightEnc;
   private CANEncoder frontRightEnc;
 
+  // For use with Pathfinder
 	public final double kWheel_diameter = 0.2032; // Meters
   public final double kPulsesPerRevolution = 360; // TODO: CHANGE?
   public final double kDistanceScaler = 16; // Gear ratio plus tuning TODO: Tune
 
+  // PID constants
   private final double kAbsoluteTolerance = 2;
   private final double kPercentTolerance = 1;
 
+  // Joystick speeds updated in periodic
   private double inputSpeed = 0;
   private double inputStrafeSpeed = 0;
   private double inputRotationSpeed = 0;
 
+  // Current speed applied to motors
   private double currentSpeed = 0;
   private double currentStrafeSpeed = 0;
   private double currentRotationSpeed = 0;
 
+  // Rotation speed given by the PID to fix strafing
   private double pidRotationSpeed = 0;
 
-  /**
-   * Add your docs here.
-   */
   public PIDDriveTrain() {
-    // Intert a subsystem name and PID values here
     super("PIDDriveTrain", .025, 0, 0, 0, .01);
-    // Use these to get going:
-    // setSetpoint() - Sets where the PID controller should move the system
-    // to
-    // enable() - Enables the PID controller.
+
     frontLeft = new CANSparkMax(RobotMap.frontLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     backLeft = new CANSparkMax(RobotMap.backLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     frontRight = new CANSparkMax(RobotMap.frontRightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -86,6 +83,7 @@ public class PIDDriveTrain extends PIDSubsystem {
 
     robotDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
   
+    // Setup the PID
     setOutputRange(-.25, .25);
     setInputRange(-360, 360);
     setAbsoluteTolerance(kAbsoluteTolerance);
@@ -95,20 +93,22 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    // Default command sets power to motors from input speeds
     setDefaultCommand(new PIDDriveTrainCommand());
   }
 
+  // Robot oriented driving
   public void drive(double speed, double strafe, double rotation) {
     robotDrive.driveCartesian(strafe, speed, rotation);
   }
 
+  // Field oriented driving
   public void drive(double speed, double strafe, double rotation, double angle) {
     robotDrive.driveCartesian(strafe, speed, rotation, angle);
   }
 
   public void stopDriveTrain() {
+    // Reset the angle setpoint for the PID when stopped
     setSetpoint360(Robot.m_navX.getAngle());
 
     currentSpeed = 0;
@@ -117,6 +117,7 @@ public class PIDDriveTrain extends PIDSubsystem {
     robotDrive.driveCartesian(0, 0, 0);
   }
 
+  // ********** Pathfinder methods ********** //
   public void resetEncoders() {
   }
 
@@ -167,6 +168,11 @@ public class PIDDriveTrain extends PIDSubsystem {
     currentIdleMode = idleMode;
   }
 
+  // *********** PID methods *********** //
+  /**
+   * The PID has a set angle that it tries to stay at while driving
+   * and uses the navX current angle as an input.
+   */
   @Override
   protected double returnPIDInput() {
     // Return your input value for the PID loop
@@ -180,7 +186,6 @@ public class PIDDriveTrain extends PIDSubsystem {
     // Use output to drive your system, like a motor
     // e.g. yourMotor.set(output);
     pidRotationSpeed = output;
-    // System.out.println("Output: " + output);
   }
 
   public double getPidRotationSpeed() {
@@ -191,6 +196,7 @@ public class PIDDriveTrain extends PIDSubsystem {
     setSetpoint(setpoint % 360);
   }
 
+  // ********** Methods so that updating inputs work from periodic ********** //
   public void setInputSpeeds(double speed, double strafe, double rotation) {
     inputSpeed = speed;
     inputStrafeSpeed = strafe;

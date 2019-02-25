@@ -12,6 +12,9 @@ import com.revrobotics.*;
 
 import frc.robot.Robot;
 
+/**
+ * Toggles between coast and brake mode on motors
+ */
 public class SwitchMotorTypeCommand extends Command {
   public SwitchMotorTypeCommand() {
     // Use requires() here to declare subsystem dependencies

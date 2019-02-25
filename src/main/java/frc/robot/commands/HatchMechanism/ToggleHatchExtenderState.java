@@ -11,12 +11,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
- * Add your docs here.
+ * Toggles the hatch extender on button press
  */
 public class ToggleHatchExtenderState extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
   public ToggleHatchExtenderState() {
     super();
     // Use requires() here to declare subsystem dependencies

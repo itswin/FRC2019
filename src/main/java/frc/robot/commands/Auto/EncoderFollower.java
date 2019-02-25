@@ -9,6 +9,10 @@ package frc.robot.commands.Auto;
 
 import jaci.pathfinder.Trajectory;
 
+/**
+ * Used with pathfinder
+ * Unfinished
+ */
 public class EncoderFollower {
 
     double encoder_offset, encoder_tick_count;
@@ -27,7 +31,7 @@ public class EncoderFollower {
         reset();
     }
 
-    public EncoderFollower() { }
+    public EncoderFollower() {}
 
     /**
      * Set a new trajectory to follow, and reset the cumulative errors and segment counts

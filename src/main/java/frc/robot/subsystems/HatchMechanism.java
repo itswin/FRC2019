@@ -16,9 +16,11 @@ public class HatchMechanism extends Subsystem {
   private DoubleSolenoid hatchLauncherSolenoid;
   private DoubleSolenoid hatchExtenderSolenoid;
 
+  // Have constants to compare to so magic values aren't floating around
   public final static DoubleSolenoid.Value hatchLauncherRetractedValue = DoubleSolenoid.Value.kForward;
   public final static DoubleSolenoid.Value hatchLauncherExtendedValue = DoubleSolenoid.Value.kReverse;
   private DoubleSolenoid.Value hatchLauncherExtensionState = hatchLauncherRetractedValue;
+
   public final static DoubleSolenoid.Value hatchExtenderRetractedValue = DoubleSolenoid.Value.kReverse;
   public final static DoubleSolenoid.Value hatchExtenderExtendedValue = DoubleSolenoid.Value.kForward;
   private DoubleSolenoid.Value hatchExtenderExtensionState = hatchExtenderRetractedValue;
@@ -33,9 +35,8 @@ public class HatchMechanism extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
-    // setDefaultCommand(new HatchMechanismCommand());
+    // No default command
+    // State is updated using buttons mapped to commands in OI
   }
 
   public DoubleSolenoid.Value getHatchLauncherExtensionState() {

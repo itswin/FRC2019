@@ -26,6 +26,7 @@ public class RocketHatchPositioningCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    // Uses joystick hat to send lift to hatch setpoints
     if(OI.driveController.povUpButton.get()) {
       Robot.m_lift.setSetpoint(Robot.m_lift.kThirdRocketHatch);
     } else if(OI.driveController.povRightButton.get()) {

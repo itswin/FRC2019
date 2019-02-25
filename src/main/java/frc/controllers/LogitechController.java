@@ -1,6 +1,8 @@
 /**
  * Controller class for the driver
  * Abstracts buttons to facilitate writing code for attaching buttons to commands
+ * 
+ * Built for Logitech Gamepad F310 on X mode
  */
 
 package frc.controllers;

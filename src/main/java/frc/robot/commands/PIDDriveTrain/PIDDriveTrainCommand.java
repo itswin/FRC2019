@@ -10,6 +10,10 @@ package frc.robot.commands.PIDDriveTrain;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
+/**
+ * Base command for the PIDDriveTrain
+ * Sets power to the motors from the input speeds updated in periodics
+ */
 public class PIDDriveTrainCommand extends Command {
   private boolean wasMoving;
   private final double rotationScalar = .75;
@@ -43,11 +47,13 @@ public class PIDDriveTrainCommand extends Command {
     double currentRotationSpeed = Robot.m_pidDriveTrain.getCurrentRotationSpeed();
 
     if(inputRotationSpeed != 0) {
+      // Disables the rotation PID if there is a rotation input
       if(!wasMoving) {
         wasMoving = true;
         Robot.m_pidDriveTrain.disable();
       }
     } else {
+      // Reenables the PID if the robot was just manually being rotated and isn't anymore
       if(wasMoving) {
         wasMoving = false;
         Robot.m_pidDriveTrain.setSetpoint360(Robot.m_navX.getAngle());
@@ -59,6 +65,7 @@ public class PIDDriveTrainCommand extends Command {
 
     
     // Limit the rate you can change speed for all directions
+    // Not used right now, still has problems
     if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
       currentSpeed += kMaxSpeedDeltaPerLoop;
     } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {
@@ -85,10 +92,10 @@ public class PIDDriveTrainCommand extends Command {
     
     Robot.m_pidDriveTrain.setCurrentSpeeds(currentRotationSpeed, currentStrafeSpeed, currentRotationSpeed);
 
-    // Without angle
+    // Robot oriented driving
     Robot.m_pidDriveTrain.drive(Robot.m_pidDriveTrain.getCurrentSpeed(), Robot.m_pidDriveTrain.getCurrentStrafeSpeed(), Robot.m_pidDriveTrain.getCurrentRotationSpeed());
 
-    // With angle
+    // Field oriented driving
     // Robot.m_pidDriveTrain.drive(Robot.m_pidDriveTrain.getCurrentSpeed(), Robot.m_pidDriveTrain.getCurrentStrafeSpeed(), Robot.m_pidDriveTrain.getCurrentRotationSpeed(), -Robot.m_navX.getAngle());
   }
 

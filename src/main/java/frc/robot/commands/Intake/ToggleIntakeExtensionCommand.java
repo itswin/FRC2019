@@ -12,12 +12,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
- * Add your docs here.
+ * Toggle the intake extension on button press
  */
 public class ToggleIntakeExtensionCommand extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
   public ToggleIntakeExtensionCommand() {
     super();
     // Use requires() here to declare subsystem dependencies

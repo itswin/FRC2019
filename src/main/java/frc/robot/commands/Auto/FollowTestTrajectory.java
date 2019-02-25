@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Pathfinder;
 
+/**
+ * Used with Pathfinder
+ * Unfinished
+ */
 public class FollowTestTrajectory extends Command {
 
   private final String kLeftTrajFileName = "/home/lvuser/paths/testPath_left_detailed.csv";

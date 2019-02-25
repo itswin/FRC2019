@@ -10,6 +10,10 @@ package frc.robot.commands.Intake;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
+/**
+ * Pools the lift for its height
+ * The intake should be retracted if the lift is up
+ */
 public class IntakeBaseCommand extends Command {
   public IntakeBaseCommand() {
     // Use requires() here to declare subsystem dependencies
@@ -24,8 +28,6 @@ public class IntakeBaseCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // Polls the lift for its height
-    // The intake should be retracted if the lift is up
     if(Robot.m_lift.getEncoderAverage() > Robot.m_lift.kFirstRocketCargoHole && 
         Robot.m_intake.intakeExtensionState == Robot.m_intake.intakeExtendedVal) {
       Robot.m_intake.retractIntake();
