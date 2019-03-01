@@ -35,7 +35,7 @@ public class Intake extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new IntakeBaseCommand());
+    // setDefaultCommand(new IntakeBaseCommand());
   }
 
   // ********** Motor methods ********** //

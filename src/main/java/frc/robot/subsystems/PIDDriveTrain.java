@@ -53,6 +53,8 @@ public class PIDDriveTrain extends PIDSubsystem {
   private double inputStrafeSpeed = 0;
   private double inputRotationSpeed = 0;
 
+  private boolean manualDriveOn = true;
+
   // Current speed applied to motors
   private double currentSpeed = 0;
   private double currentStrafeSpeed = 0;
@@ -243,5 +245,13 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   public void setCurrentRotationSpeed(double rotation) {
     currentRotationSpeed = rotation;
+  }
+
+  public void setManualDriveOn(boolean bool) {
+    manualDriveOn = bool;
+  }
+
+  public boolean getManualDriveOn() {
+    return manualDriveOn;
   }
 }

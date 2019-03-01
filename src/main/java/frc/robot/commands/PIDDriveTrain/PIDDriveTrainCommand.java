@@ -90,7 +90,7 @@ public class PIDDriveTrainCommand extends Command {
       currentRotationSpeed = inputRotationSpeed;
     }
     
-    Robot.m_pidDriveTrain.setCurrentSpeeds(currentRotationSpeed, currentStrafeSpeed, currentRotationSpeed);
+    Robot.m_pidDriveTrain.setCurrentSpeeds(currentSpeed, currentStrafeSpeed, currentRotationSpeed);
 
     // Robot oriented driving
     Robot.m_pidDriveTrain.drive(Robot.m_pidDriveTrain.getCurrentSpeed(), Robot.m_pidDriveTrain.getCurrentStrafeSpeed(), Robot.m_pidDriveTrain.getCurrentRotationSpeed());

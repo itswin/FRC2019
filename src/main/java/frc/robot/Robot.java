@@ -9,9 +9,12 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.commands.Intake.IntakeBaseCommand;
 import frc.robot.commands.Lift.RocketHatchPositioningCommand;
 import frc.robot.subsystems.*;
 import frc.vision.DeepSpaceVisionPipeline;
@@ -54,12 +58,12 @@ public class Robot extends TimedRobot {
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
-  public static final Paths m_paths = new Paths();
+  // public static final Paths m_paths = new Paths();
   
   // private UsbCamera camera;
   // private VisionThread visionThread;
-  // private static final int kImgHeight = 480;
-  // private static final int kImgWidth = 640;
+  private static final int kImgHeight = 480;
+  private static final int kImgWidth = 640;
   // private double centerX = 0;
   // private final Object imgLock = new Object();
 
@@ -92,6 +96,25 @@ public class Robot extends TimedRobot {
     //       }
     //   }
     // });
+    
+    new Thread(() -> {
+      UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+      camera.setResolution(kImgWidth, kImgHeight);
+      camera.setBrightness(75);
+      camera.setExposureManual(5);
+      
+      CvSink cvSink = CameraServer.getInstance().getVideo();
+      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", kImgWidth, kImgHeight);
+      
+      Mat source = new Mat();
+      Mat output = new Mat();
+      
+      while(!Thread.interrupted()) {
+          cvSink.grabFrame(source);
+          Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+          outputStream.putFrame(output);
+      }
+    }).start();
   }
 
   /**
@@ -143,6 +166,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // This command needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
+    Scheduler.getInstance().add(new IntakeBaseCommand());
 
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -166,22 +190,24 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
 
-    // Sends joystick values to PIDDriveTrain
-    // Slow down rotation
-    double rotationScalar = .75;
-    // Slow down when lift is up
-    double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
+    if(Robot.m_pidDriveTrain.getManualDriveOn()) {
+      // Sends joystick values to PIDDriveTrain
+      // Slow down rotation
+      double rotationScalar = .75;
+      // Slow down when lift is up
+      double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
 
-    double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
-    double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
-    double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
-    
-    // Square the values to make driving less sensitive
-    // speed = speed * speed * Math.signum(speed);
-    // strafe = strafe * strafe * Math.signum(strafe);
-    rotation = rotation*rotation * Math.signum(rotation);
+      double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
+      double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
+      double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
+      
+      // Square the values to make driving less sensitive
+      // speed = speed * speed * Math.signum(speed);
+      // strafe = strafe * strafe * Math.signum(strafe);
+      rotation = rotation*rotation * Math.signum(rotation);
 
-    m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
+      m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
+    }
   }
 
   @Override
@@ -197,6 +223,7 @@ public class Robot extends TimedRobot {
 
     // This command needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
+    Scheduler.getInstance().add(new IntakeBaseCommand());
   }
 
   /**
@@ -206,22 +233,24 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     
-    // Sends joystick values to PIDDriveTrain
-    // Slow down rotation
-    double rotationScalar = .75;
-    // Slow down when lift is up
-    double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
+    if(Robot.m_pidDriveTrain.getManualDriveOn()) {
+      // Sends joystick values to PIDDriveTrain
+      // Slow down rotation
+      double rotationScalar = .75;
+      // Slow down when lift is up
+      double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
 
-    double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
-    double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
-    double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
-    
-    // Square the values to make driving less sensitive
-    // speed = speed * speed * Math.signum(speed);
-    // strafe = strafe * strafe * Math.signum(strafe);
-    rotation = rotation*rotation * Math.signum(rotation);
+      double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
+      double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
+      double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
+      
+      // Square the values to make driving less sensitive
+      // speed = speed * speed * Math.signum(speed);
+      // strafe = strafe * strafe * Math.signum(strafe);
+      rotation = rotation*rotation * Math.signum(rotation);
 
-    m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
+      m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
+    }
   }
 
   /**

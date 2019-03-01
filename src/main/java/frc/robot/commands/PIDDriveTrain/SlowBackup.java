@@ -5,34 +5,28 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.PIDDriveTrain;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-/**
- * Pools the lift for its height
- * The intake should be retracted if the lift is up
- */
-public class IntakeBaseCommand extends Command {
-  public IntakeBaseCommand() {
+public class SlowBackup extends Command {
+
+  public SlowBackup() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    // requires(Robot.m_intake);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.m_pidDriveTrain.setManualDriveOn(false);
+    Robot.m_pidDriveTrain.setInputSpeeds(-.1, 0, 0);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.m_lift.getEncoderAverage() > Robot.m_lift.kFirstRocketCargoHole && 
-        Robot.m_intake.intakeExtensionState == Robot.m_intake.intakeExtendedVal) {
-      Robot.m_intake.retractIntake();
-    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -44,11 +38,15 @@ public class IntakeBaseCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.m_pidDriveTrain.setManualDriveOn(true);
+    Robot.m_pidDriveTrain.setInputSpeeds(0, 0, 0);
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    Robot.m_pidDriveTrain.setManualDriveOn(true);
+    Robot.m_pidDriveTrain.setInputSpeeds(0, 0, 0);
   }
 }

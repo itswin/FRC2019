@@ -8,7 +8,6 @@
 package frc.robot;
 
 import frc.controllers.LogitechController;
-import frc.robot.commands.*;
 import frc.robot.commands.PIDDriveTrain.*;
 import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
@@ -66,6 +65,7 @@ public class OI {
     // Hatch Mechanism
     driveController.yButton.whenPressed(new ToggleHatchLauncherState());
     driveController.yButton.whenReleased(new ToggleHatchLauncherState());
-    driveController.bButton.whenPressed(new ToggleHatchExtenderState());
+    // driveController.bButton.whenPressed(new ToggleHatchExtenderState());
+    driveController.bButton.whenPressed(new GrabHatchFromStation());
   }
 }

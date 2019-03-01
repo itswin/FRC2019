@@ -36,12 +36,13 @@ public class Lift extends PIDSubsystem {
 
   // Setpoints for the lift
   public static final double kHome = 0;
-  public static final double kFirstRocketCargoHole = 30;
+  public static final double kFirstRocketCargoHole = 28;
   public static final double kSecondRocketCargoHole = 67;
   public static final double kThirdRocketCargoHole = 99;
   public static final double kFirstRocketHatch = 0;
   public static final double kSecondRocketHatch = 45;
   public static final double kThirdRocketHatch = 80;
+  public static final double kStationHatch = 9;
 
   // PID constants
   private final double kAbsoluteTolerance = 1;
