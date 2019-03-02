@@ -63,9 +63,12 @@ public class OI {
     driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
 
     // Hatch Mechanism
-    driveController.yButton.whenPressed(new ToggleHatchLauncherState());
-    driveController.yButton.whenReleased(new ToggleHatchLauncherState());
-    // driveController.bButton.whenPressed(new ToggleHatchExtenderState());
+    driveController.startButton.whenPressed(new ToggleHatchLauncherState());
+    driveController.startButton.whenReleased(new ToggleHatchLauncherState());
+
+    // Macros
     driveController.bButton.whenPressed(new GrabHatchFromStation());
+    driveController.backButton.whenPressed(new ShootCargoIntoShip());
+    driveController.yButton.whenPressed(new LaunchHatch());
   }
 }
