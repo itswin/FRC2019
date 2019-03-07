@@ -5,14 +5,14 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.HatchMechanism;
+package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 
-import frc.robot.commands.Lift.StationHatchHeight;
-import frc.robot.commands.Lift.HomeHeight;
-import frc.robot.commands.PIDDriveTrain.SlowBackup;
+import frc.robot.commands.Lift.*;
+import frc.robot.commands.HatchMechanism.*;
+import frc.robot.commands.PIDDriveTrain.*;
 
 public class GrabHatchFromStation extends CommandGroup {
   public static final double timeToExtend = .5; // in seconds

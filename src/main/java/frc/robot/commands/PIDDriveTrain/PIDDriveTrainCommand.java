@@ -15,8 +15,6 @@ import frc.robot.Robot;
  * Sets power to the motors from the input speeds updated in periodics
  */
 public class PIDDriveTrainCommand extends Command {
-  private boolean wasMoving;
-  private final double rotationScalar = .75;
   private final double kMaxSpeedDeltaPerLoop = .1;
 
   private final boolean rampRateEnabled = false;
@@ -30,7 +28,6 @@ public class PIDDriveTrainCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    wasMoving = false;
     Robot.m_pidDriveTrain.setSetpoint360(Robot.m_navX.getAngle());
     Robot.m_pidDriveTrain.enable();
   }
@@ -48,21 +45,18 @@ public class PIDDriveTrainCommand extends Command {
 
     if(inputRotationSpeed != 0) {
       // Disables the rotation PID if there is a rotation input
-      if(!wasMoving) {
-        wasMoving = true;
+      if(Robot.m_pidDriveTrain.getPIDController().isEnabled()) {
         Robot.m_pidDriveTrain.disable();
       }
     } else {
       // Reenables the PID if the robot was just manually being rotated and isn't anymore
-      if(wasMoving) {
-        wasMoving = false;
+      if(!Robot.m_pidDriveTrain.getPIDController().isEnabled()) {
         Robot.m_pidDriveTrain.setSetpoint360(Robot.m_navX.getAngle());
         Robot.m_pidDriveTrain.enable();
+      } else {
+        inputRotationSpeed = Robot.m_pidDriveTrain.getPidRotationSpeed();
       }
-
-      inputRotationSpeed = Robot.m_pidDriveTrain.getPidRotationSpeed();
     }
-
     
     // Limit the rate you can change speed for all directions
     // Not used right now, still has problems

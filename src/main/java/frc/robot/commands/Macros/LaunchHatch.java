@@ -5,10 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.HatchMechanism;
+package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
+import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.HomeHeight;
 import frc.robot.commands.PIDDriveTrain.*;
 
@@ -34,7 +34,6 @@ public class LaunchHatch extends CommandGroup {
     // a CommandGroup containing them would require both the chassis and the
     // arm.
     addParallel(new ToggleHatchLauncherState());
-    // addSequential(new WaitCommand(.1));
     addSequential(new AutoBackup(-.3), .4);
     addSequential(new ToggleHatchLauncherState());
     addSequential(new HomeHeight());

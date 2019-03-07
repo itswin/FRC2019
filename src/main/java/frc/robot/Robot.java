@@ -97,6 +97,7 @@ public class Robot extends TimedRobot {
     //   }
     // });
     
+    /*
     new Thread(() -> {
       UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
       camera.setResolution(kImgWidth, kImgHeight);
@@ -115,6 +116,7 @@ public class Robot extends TimedRobot {
           outputStream.putFrame(output);
       }
     }).start();
+    */
   }
 
   /**
@@ -164,9 +166,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    // This command needs to be started manually once
+    // These commands needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
     Scheduler.getInstance().add(new IntakeBaseCommand());
+
+    m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
 
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -221,7 +225,7 @@ public class Robot extends TimedRobot {
     }
     m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
 
-    // This command needs to be started manually once
+    // These commands needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
     Scheduler.getInstance().add(new IntakeBaseCommand());
   }

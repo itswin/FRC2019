@@ -11,6 +11,7 @@ import frc.controllers.LogitechController;
 import frc.robot.commands.PIDDriveTrain.*;
 import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
+import frc.robot.commands.Macros.*;
 import frc.robot.commands.Intake.*;
 
 /**

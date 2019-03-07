@@ -5,11 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Lift;
+package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.commands.Intake.*;
+import frc.robot.commands.Lift.*;
 import frc.robot.commands.PIDDriveTrain.*;
 
 public class ShootCargoIntoShip extends CommandGroup {
