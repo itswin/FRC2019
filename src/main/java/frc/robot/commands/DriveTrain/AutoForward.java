@@ -5,52 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.DriveTrain;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.DriveTrain.DriveState;
 
-/**
- * Pools the lift for its height
- * The intake should be retracted if the lift is up
- */
-public class IntakeBaseCommand extends Command {
-  public IntakeBaseCommand() {
+public class AutoForward extends Command {
+  private double forwardSpeed;
+  public AutoForward(double speed) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    // requires(Robot.m_intake);
+
+    // Prevent user error; make sure the robot actually goes forward
+    if(speed < 0) {
+      speed *= -1;
+    }
+    forwardSpeed = speed;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.m_driveTrain.driveState = DriveState.kAuto;
+    Robot.m_driveTrain.setInputAutoSpeeds(forwardSpeed, 0, 0);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.m_lift.getEncoderAverage() > Lift.kFirstRocketCargoHole && 
-        Robot.m_intake.intakeExtensionState == Intake.intakeExtendedVal) {
-      Robot.m_intake.retractIntake();
-    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return Robot.m_driveTrain.driveState != DriveState.kAuto;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.m_driveTrain.driveState = DriveState.kManual;
+    Robot.m_driveTrain.setInputAutoSpeeds(0, 0, 0);
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    Robot.m_driveTrain.driveState = DriveState.kManual;
+    Robot.m_driveTrain.setInputAutoSpeeds(0, 0, 0);
   }
 }

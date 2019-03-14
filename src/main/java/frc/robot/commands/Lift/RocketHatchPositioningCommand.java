@@ -8,7 +8,7 @@
 package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
+import frc.robot.subsystems.Lift;
 import frc.robot.Robot;
 
 public class RocketHatchPositioningCommand extends Command {
@@ -27,12 +27,12 @@ public class RocketHatchPositioningCommand extends Command {
   @Override
   protected void execute() {
     // Uses joystick hat to send lift to hatch setpoints
-    if(OI.driveController.povUpButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kThirdRocketHatch);
-    } else if(OI.driveController.povRightButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kSecondRocketHatch);
-    } else if(OI.driveController.povDownButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kHome);
+    if(Robot.m_oi.driveController.povUpButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kThirdRocketHatch);
+    } else if(Robot.m_oi.driveController.povRightButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kSecondRocketHatch);
+    } else if(Robot.m_oi.driveController.povDownButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kHome);
     }
   }
 

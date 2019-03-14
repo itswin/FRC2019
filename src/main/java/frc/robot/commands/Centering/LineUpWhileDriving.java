@@ -5,19 +5,15 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Macros;
+package frc.robot.commands.Centering;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.Intake.*;
-import frc.robot.commands.Lift.*;
-import frc.robot.commands.PIDDriveTrain.*;
 
-public class ShootCargoIntoShip extends CommandGroup {
+public class LineUpWhileDriving extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public ShootCargoIntoShip() {
+  public LineUpWhileDriving() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -34,17 +30,7 @@ public class ShootCargoIntoShip extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addParallel(new CargoShipHeight());
-    addParallel(new SlowLiftIntake());
-    addSequential(new WaitCommand(.5));
-    addParallel(new RetractIntake());
-    addSequential(new WaitCommand(.25));
-    addSequential(new AutoForward(.3), .35);
-    addSequential(new WaitCommand(.5));
-    addSequential(new OuttakeCommand());
-    addSequential(new WaitCommand(.5));
-    addParallel(new StopIntakeCommand());
-    addSequential(new AutoBackup(-.3), .15);
-    addSequential(new HomeHeight());
+    addParallel(new GoToClosestScoringAngle());
+    addParallel(new DelayedCenterHorizontallyOnVisionTarget());
   }
 }

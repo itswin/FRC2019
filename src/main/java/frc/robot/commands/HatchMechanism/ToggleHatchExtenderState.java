@@ -9,6 +9,7 @@ package frc.robot.commands.HatchMechanism;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
+import frc.robot.subsystems.HatchMechanism;
 
 /**
  * Toggles the hatch extender on button press
@@ -24,7 +25,7 @@ public class ToggleHatchExtenderState extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    if(Robot.m_hatchMechanism.getHatchExtenderExtensionState() == Robot.m_hatchMechanism.hatchExtenderRetractedValue) {
+    if(Robot.m_hatchMechanism.getHatchExtenderExtensionState() == HatchMechanism.hatchExtenderRetractedValue) {
       Robot.m_hatchMechanism.extendHatchExtender();
     } else {
       Robot.m_hatchMechanism.retractHatchExtender();

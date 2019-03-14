@@ -9,27 +9,16 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
 
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.vision.VisionThread;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.commands.Intake.IntakeBaseCommand;
 import frc.robot.commands.Lift.RocketHatchPositioningCommand;
 import frc.robot.subsystems.*;
-import frc.vision.DeepSpaceVisionPipeline;
-import jaci.pathfinder.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -54,16 +43,20 @@ public class Robot extends TimedRobot {
   }
 
   // Initialize subsystems
+  public static final DriveTrain m_driveTrain = null;
   public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
   // public static final Paths m_paths = new Paths();
+  public static CenteringRotation m_cR = new CenteringRotation();
+  public static CenteringHorizontal m_cH = new CenteringHorizontal();
+  public static CenteringVertical m_cV = new CenteringVertical();
   
   // private UsbCamera camera;
   // private VisionThread visionThread;
-  private static final int kImgHeight = 480;
-  private static final int kImgWidth = 640;
+  // private static final int kImgHeight = 480;
+  // private static final int kImgWidth = 640;
   // private double centerX = 0;
   // private final Object imgLock = new Object();
 
@@ -80,43 +73,9 @@ public class Robot extends TimedRobot {
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
-
-    // Camera stuff
-    // camera = CameraServer.getInstance().startAutomaticCapture();
-    // camera.setResolution(kImgWidth, kImgHeight);
-    // camera.setBrightness(75);
-    // camera.setExposureManual(5);
-
-    // visionThread = new VisionThread(camera, new DeepSpaceVisionPipeline(), pipeline -> {
-    //   if (pipeline.filterContoursOutput().size() >= 2) {
-    //     Rect r1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-    //     Rect r2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
-    //       synchronized (imgLock) {
-    //           centerX = ((r1.x + (r1.width / 2)) + (r2.x + (r2.width / 2))) / 2;
-    //       }
-    //   }
-    // });
     
-    /*
-    new Thread(() -> {
-      UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-      camera.setResolution(kImgWidth, kImgHeight);
-      camera.setBrightness(75);
-      camera.setExposureManual(5);
-      
-      CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", kImgWidth, kImgHeight);
-      
-      Mat source = new Mat();
-      Mat output = new Mat();
-      
-      while(!Thread.interrupted()) {
-          cvSink.grabFrame(source);
-          Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-          outputStream.putFrame(output);
-      }
-    }).start();
-    */
+    m_driveTrain.initPIDs();
+    m_driveTrain.zeroAngle = 0;
   }
 
   /**
@@ -145,7 +104,8 @@ public class Robot extends TimedRobot {
     Robot.m_intake.retractIntake();
     Robot.m_hatchMechanism.retractHatchExtender();
     Robot.m_pidDriveTrain.stopDriveTrain();
-    Robot.m_lift.setSetpoint(Robot.m_lift.kHome);
+    Robot.m_lift.setSetpoint(Lift.kHome);
+    Robot.m_driveTrain.stop();
   }
 
   @Override
@@ -171,6 +131,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().add(new IntakeBaseCommand());
 
     m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+    //m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
 
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -212,6 +173,35 @@ public class Robot extends TimedRobot {
 
       m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
     }
+    /*
+    // Slow down rotation
+    double rotationScalar = .75;
+
+    double speed = -Robot.m_oi.driveController.getLeftYAxis();
+    double strafe = Robot.m_oi.driveController.getLeftXAxis();
+    double rotation = Robot.m_oi.driveController.getRightXAxis() * rotationScalar;
+    
+    // Square the values to make driving less sensitive
+    // speed = speed * speed * Math.signum(speed);
+    // strafe = strafe * strafe * Math.signum(strafe);
+    rotation = rotation*rotation * Math.signum(rotation);
+    
+    switch(m_driveTrain.driveState) {
+      case kManual:
+        // Sends joystick values to PIDDriveTrain
+        m_driveTrain.setInputJoystickSpeeds(speed, strafe, rotation);
+        break;
+      case kAuto:
+        // Speeds are set in the command currently controlling the drivetrain
+
+        // If joystick input, stop auto
+        if(speed != 0 || strafe != 0 || rotation != 0) {
+          m_driveTrain.driveState = DriveTrain.DriveState.kManual;
+        }
+        break;
+      default:
+        break;
+    } */
   }
 
   @Override
@@ -224,6 +214,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+    // m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
 
     // These commands needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
@@ -255,6 +246,36 @@ public class Robot extends TimedRobot {
 
       m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
     }
+    
+    /*
+    // Slow down rotation
+    double rotationScalar = .75;
+
+    double speed = -Robot.m_oi.driveController.getLeftYAxis();
+    double strafe = Robot.m_oi.driveController.getLeftXAxis();
+    double rotation = Robot.m_oi.driveController.getRightXAxis() * rotationScalar;
+    
+    // Square the values to make driving less sensitive
+    // speed = speed * speed * Math.signum(speed);
+    // strafe = strafe * strafe * Math.signum(strafe);
+    rotation = rotation*rotation * Math.signum(rotation);
+    
+    switch(m_driveTrain.driveState) {
+      case kManual:
+        // Sends joystick values to PIDDriveTrain
+        m_driveTrain.setInputJoystickSpeeds(speed, strafe, rotation);
+        break;
+      case kAuto:
+        // Speeds are set in the command currently controlling the drivetrain
+
+        // If joystick input, stop auto
+        if(speed != 0 || strafe != 0 || rotation != 0) {
+          m_driveTrain.driveState = DriveTrain.DriveState.kManual;
+        }
+        break;
+      default:
+        break;
+    } */
   }
 
   /**
@@ -262,5 +283,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+  
+  public static double getComparedYaw() {
+    return (m_navX.getYaw() - m_driveTrain.zeroAngle) % 180;
   }
 }

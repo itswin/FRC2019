@@ -8,7 +8,7 @@
 package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
+import frc.robot.subsystems.Lift;
 import frc.robot.Robot;
 
 public class RocketCargoPositioningCommand extends Command {
@@ -26,12 +26,12 @@ public class RocketCargoPositioningCommand extends Command {
   @Override
   protected void execute() {
     // Uses joystick hat and A button to send lift to cargo setpoints
-    if(OI.driveController.povUpButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kThirdRocketCargoHole);
-    } else if(OI.driveController.povRightButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kSecondRocketCargoHole);
-    } else if(OI.driveController.povDownButton.get()) {
-      Robot.m_lift.setSetpoint(Robot.m_lift.kFirstRocketCargoHole);
+    if(Robot.m_oi.driveController.povUpButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kThirdRocketCargoHole);
+    } else if(Robot.m_oi.driveController.povRightButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kSecondRocketCargoHole);
+    } else if(Robot.m_oi.driveController.povDownButton.get()) {
+      Robot.m_lift.setSetpoint(Lift.kFirstRocketCargoHole);
     }
   }
 

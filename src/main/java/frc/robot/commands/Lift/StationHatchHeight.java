@@ -9,6 +9,7 @@ package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
+import frc.robot.subsystems.Lift;
 
 /**
  * Add your docs here.
@@ -26,6 +27,6 @@ public class StationHatchHeight extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_lift.setSetpoint(Robot.m_lift.kStationHatch);
+    Robot.m_lift.setSetpoint(Lift.kStationHatch);
   }
 }

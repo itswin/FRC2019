@@ -5,28 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Lift;
+package frc.robot.PIDs;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.PIDOutput;
 import frc.robot.Robot;
-import frc.robot.subsystems.Lift;
 
 /**
  * Add your docs here.
  */
-public class SecondRocketHatchHeight extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
-  public SecondRocketHatchHeight() {
-    super();
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
-  }
+public class DriveTrainSpeedPIDOutput implements PIDOutput {
 
-  // Called once when the command executes
-  @Override
-  protected void initialize() {
-    Robot.m_lift.setSetpoint(Lift.kSecondRocketHatch);
-  }
+    @Override
+    public void pidWrite(double output) {
+        Robot.m_driveTrain.setInputAutoSpeed(output);
+    }
 }

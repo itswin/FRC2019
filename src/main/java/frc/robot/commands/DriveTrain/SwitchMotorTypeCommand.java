@@ -5,22 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.PIDDriveTrain;
 
 import edu.wpi.first.wpilibj.command.Command;
+import com.revrobotics.*;
+
 import frc.robot.Robot;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lift;
 
 /**
- * Pools the lift for its height
- * The intake should be retracted if the lift is up
+ * Toggles between coast and brake mode on motors
  */
-public class IntakeBaseCommand extends Command {
-  public IntakeBaseCommand() {
+public class SwitchMotorTypeCommand extends Command {
+  public SwitchMotorTypeCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    // requires(Robot.m_intake);
+    requires(Robot.m_pidDriveTrain);
   }
 
   // Called just before this Command runs the first time
@@ -31,16 +30,19 @@ public class IntakeBaseCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.m_lift.getEncoderAverage() > Lift.kFirstRocketCargoHole && 
-        Robot.m_intake.intakeExtensionState == Intake.intakeExtendedVal) {
-      Robot.m_intake.retractIntake();
+    if(Robot.m_pidDriveTrain.getIdleMode() == CANSparkMax.IdleMode.kBrake) {
+      Robot.m_pidDriveTrain.changeIdleMode(CANSparkMax.IdleMode.kCoast);
+      System.out.println("Current Idle Mode: Coast");
+    } else {
+      Robot.m_pidDriveTrain.changeIdleMode(CANSparkMax.IdleMode.kBrake);
+      System.out.println("Current Idle Mode: Brake");
     }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return true;
   }
 
   // Called once after isFinished returns true

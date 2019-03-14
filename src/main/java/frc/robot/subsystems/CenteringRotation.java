@@ -5,28 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Lift;
+package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import frc.robot.subsystems.Lift;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
- * Add your docs here.
+ * Used so that you can't buffer centering commands
  */
-public class HomeHeight extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
-  public HomeHeight() {
-    super();
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
-  }
+public class CenteringRotation extends Subsystem {
+  // Put methods for controlling this subsystem
+  // here. Call these from Commands.
 
-  // Called once when the command executes
+
   @Override
-  protected void initialize() {
-    Robot.m_lift.setSetpoint(Lift.kHome);
+  public void initDefaultCommand() {
+    // Set the default command for a subsystem here.
+    // setDefaultCommand(new MySpecialCommand());
   }
 }

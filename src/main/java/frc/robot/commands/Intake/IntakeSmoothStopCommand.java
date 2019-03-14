@@ -9,13 +9,14 @@ package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.Intake;
 
 /**
  * Fakes coast on the intake motors to avoid shooting
  * the ball out when intake motors stop suddenly
  */
 public class IntakeSmoothStopCommand extends Command {
-  private final double startingIntakeSpeed = Robot.m_intake.k_liftIntakeSpeed;
+  private final double startingIntakeSpeed = Intake.k_liftIntakeSpeed;
   private final double speedDelta = .005;
   private int count;
   private double currentIntakeSpeed;

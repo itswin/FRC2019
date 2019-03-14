@@ -46,7 +46,6 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   // PID constants
   private final double kAbsoluteTolerance = 2;
-  private final double kPercentTolerance = 1;
 
   // Joystick speeds updated in periodic
   private double inputSpeed = 0;
@@ -89,7 +88,6 @@ public class PIDDriveTrain extends PIDSubsystem {
     setOutputRange(-.25, .25);
     setInputRange(-360, 360);
     setAbsoluteTolerance(kAbsoluteTolerance);
-    setPercentTolerance(kPercentTolerance);
     enable();
   }
 

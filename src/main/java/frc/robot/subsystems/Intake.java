@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.Intake.IntakeBaseCommand;
 
 public class Intake extends Subsystem {
   private VictorSP frontIntake;
@@ -21,7 +20,7 @@ public class Intake extends Subsystem {
   // Have constants to compare to so magic values aren't floating around
   public static final DoubleSolenoid.Value intakeRetractedVal = DoubleSolenoid.Value.kReverse;
   public static final DoubleSolenoid.Value intakeExtendedVal = DoubleSolenoid.Value.kForward;
-  public static DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
+  public DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
 
   public static final double k_liftIntakeSpeed = -1;
 

@@ -24,6 +24,8 @@ public class LogitechController {
     public JoystickButton rightBumperButton;
     public JoystickButton backButton;
     public JoystickButton startButton;
+    public JoystickButton leftJoystickButton;
+    public JoystickButton rightJoystickButton;
     public POVButton povDownButton;
     public POVButton povRightButton;
     public POVButton povUpButton;
@@ -40,6 +42,8 @@ public class LogitechController {
         rightBumperButton = new JoystickButton(m_stick, 6);
         backButton = new JoystickButton(m_stick, 7);
         startButton = new JoystickButton(m_stick, 8);
+        leftJoystickButton = new JoystickButton(m_stick, 9);
+        rightJoystickButton = new JoystickButton(m_stick, 10);
         povDownButton = new POVButton(m_stick, 180, 0);
         povRightButton = new POVButton(m_stick, 90, 0);
         povUpButton = new POVButton(m_stick, 0, 0);

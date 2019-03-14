@@ -5,28 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Lift;
+package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import frc.robot.Robot;
-import frc.robot.subsystems.Lift;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * Add your docs here.
  */
-public class SecondRocketHatchHeight extends InstantCommand {
-  /**
-   * Add your docs here.
-   */
-  public SecondRocketHatchHeight() {
-    super();
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
-  }
+public class CenteringVertical extends Subsystem {
+  // Put methods for controlling this subsystem
+  // here. Call these from Commands.
 
-  // Called once when the command executes
   @Override
-  protected void initialize() {
-    Robot.m_lift.setSetpoint(Lift.kSecondRocketHatch);
+  public void initDefaultCommand() {
+    // Set the default command for a subsystem here.
+    // setDefaultCommand(new MySpecialCommand());
   }
 }

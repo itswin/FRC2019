@@ -43,6 +43,7 @@ public class Lift extends PIDSubsystem {
   public static final double kSecondRocketHatch = 45;
   public static final double kThirdRocketHatch = 80;
   public static final double kStationHatch = 9;
+  public static final double kCargoShip = 50; // TODO: Needs to be tested
 
   // PID constants
   private final double kAbsoluteTolerance = 1;

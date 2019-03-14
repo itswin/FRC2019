@@ -5,28 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Lift;
+package frc.robot.commands.Centering;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import frc.robot.Robot;
-import frc.robot.subsystems.Lift;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 
-/**
- * Add your docs here.
- */
-public class SecondRocketHatchHeight extends InstantCommand {
+public class StaggeredCenterOnVisionTarget extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public SecondRocketHatchHeight() {
-    super();
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
-  }
-
-  // Called once when the command executes
-  @Override
-  protected void initialize() {
-    Robot.m_lift.setSetpoint(Lift.kSecondRocketHatch);
+  public StaggeredCenterOnVisionTarget() {
+    // addParallel(new CenterRotationOnVisionTarget());
+    addParallel(new GoToClosestScoringAngle());
+    addParallel(new DelayedCenterHorizontallyOnVisionTarget());
+    addSequential(new DelayedCenterVerticallyOnVisionTarget());
   }
 }

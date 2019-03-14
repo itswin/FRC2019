@@ -5,52 +5,56 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.Centering;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.DriveTrain;
 
-/**
- * Pools the lift for its height
- * The intake should be retracted if the lift is up
- */
-public class IntakeBaseCommand extends Command {
-  public IntakeBaseCommand() {
+public class CenterHorizontallyWhileDriving extends Command {
+  public CenterHorizontallyWhileDriving() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    // requires(Robot.m_intake);
+    requires(Robot.m_cH);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    System.out.println("Centering horizontally");
+    Robot.m_driveTrain.driveState = DriveTrain.DriveState.kAutoHorizontal;
+    Robot.m_driveTrain.horizontalPIDController.enable();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.m_lift.getEncoderAverage() > Lift.kFirstRocketCargoHole && 
-        Robot.m_intake.intakeExtensionState == Intake.intakeExtendedVal) {
-      Robot.m_intake.retractIntake();
-    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    // return Robot.m_driveTrain.horizontalPIDController.onTarget() || Robot.m_driveTrain.driveState != DriveTrain.DriveState.kAuto;
+    // Command is meant to be run while button is held so only quit if the target is not seen
+    boolean isTargetVisible = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
+    return !isTargetVisible;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    System.out.println("Finished centering horizontally");
+    Robot.m_driveTrain.driveState = DriveTrain.DriveState.kManual;
+    Robot.m_driveTrain.horizontalPIDController.reset();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    System.out.println("Centering horizontally interrupted");
+    Robot.m_driveTrain.driveState = DriveTrain.DriveState.kManual;
+    Robot.m_driveTrain.horizontalPIDController.reset();
   }
 }

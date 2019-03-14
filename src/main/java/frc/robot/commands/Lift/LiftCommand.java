@@ -8,7 +8,6 @@
 package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
 import frc.robot.Robot;
 
 public class LiftCommand extends Command {
@@ -28,7 +27,7 @@ public class LiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(OI.driveController.getRightTrigger() > 0) {
+    if(Robot.m_oi.driveController.getRightTrigger() > 0) {
       // Right trigger to ascend
       // Programatically stops motors at set encoder limits
       if(Robot.m_lift.canLeftLiftAscend() && Robot.m_lift.canRightLiftAscend()) {
@@ -37,18 +36,18 @@ public class LiftCommand extends Command {
           wasMoving = true;
           Robot.m_lift.disable();
         }
-        Robot.m_lift.setPower(-OI.driveController.getRightTrigger());
+        Robot.m_lift.setPower(-Robot.m_oi.driveController.getRightTrigger());
       } else {
         Robot.m_lift.stopLift();
       }
-    } else if(OI.driveController.getLeftTrigger() > 0) {
+    } else if(Robot.m_oi.driveController.getLeftTrigger() > 0) {
       // Left trigger to descend
       if(Robot.m_lift.canLeftLiftDescend() && Robot.m_lift.canRightLiftDescend()) {
         if(!wasMoving) {
           wasMoving = true;
           Robot.m_lift.disable();
         }
-        Robot.m_lift.setPower(OI.driveController.getLeftTrigger());
+        Robot.m_lift.setPower(Robot.m_oi.driveController.getLeftTrigger());
       } else {
         Robot.m_lift.stopLift();
       }

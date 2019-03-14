@@ -9,6 +9,7 @@ package frc.robot.commands.HatchMechanism;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
+import frc.robot.subsystems.HatchMechanism;
 
 /**
  * Toggles the hatch launcher on button press
@@ -24,7 +25,7 @@ public class ToggleHatchLauncherState extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    if(Robot.m_hatchMechanism.getHatchLauncherExtensionState() == Robot.m_hatchMechanism.hatchLauncherRetractedValue) {
+    if(Robot.m_hatchMechanism.getHatchLauncherExtensionState() == HatchMechanism.hatchLauncherRetractedValue) {
       Robot.m_hatchMechanism.extendHatchLauncher();
     } else {
       Robot.m_hatchMechanism.retractHatchLauncher();

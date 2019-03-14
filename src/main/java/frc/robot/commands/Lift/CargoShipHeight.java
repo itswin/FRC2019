@@ -5,30 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lift;
 
 /**
- * Toggle the intake extension on button press
+ * Add your docs here.
  */
-public class ToggleIntakeExtensionCommand extends InstantCommand {
-  public ToggleIntakeExtensionCommand() {
+public class CargoShipHeight extends InstantCommand {
+  /**
+   * Add your docs here.
+   */
+  public CargoShipHeight() {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_intake);
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    if(Robot.m_intake.intakeExtensionState == Intake.intakeRetractedVal) {
-      Robot.m_intake.extendIntake();
-    } else {
-      Robot.m_intake.retractIntake();
-    }
+    Robot.m_lift.setSetpoint(Lift.kCargoShip);
   }
+
 }

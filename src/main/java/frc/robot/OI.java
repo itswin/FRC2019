@@ -8,7 +8,6 @@
 package frc.robot;
 
 import frc.controllers.LogitechController;
-import frc.robot.commands.PIDDriveTrain.*;
 import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
 import frc.robot.commands.Macros.*;
@@ -46,7 +45,7 @@ public class OI {
   // Start the command when the button is released and let it run the command
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
-  public static LogitechController driveController;
+  public LogitechController driveController;
 
   public OI() {
     driveController = new LogitechController(0);

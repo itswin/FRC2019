@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.HatchMechanism.*;
 
 public class HatchMechanism extends Subsystem {
   private DoubleSolenoid hatchLauncherSolenoid;
