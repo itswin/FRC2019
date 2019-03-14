@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 
 import frc.robot.commands.Lift.*;
 import frc.robot.commands.HatchMechanism.*;
-import frc.robot.commands.PIDDriveTrain.*;
+import frc.robot.commands.DriveTrain.*;
 
 public class GrabHatchFromStation extends CommandGroup {
   public static final double timeToExtend = .5; // in seconds
@@ -38,7 +38,7 @@ public class GrabHatchFromStation extends CommandGroup {
     // a CommandGroup containing them would require both the chassis and the
     // arm.
     addParallel(new ToggleHatchExtenderState());
-    addParallel(new SlowBackup(), timeToExtend);
+    addParallel(new AutoBackup(-.1), timeToExtend);
     addSequential(new WaitCommand(timeToExtend));
     addSequential(new StationHatchHeight());
     addSequential(new WaitCommand(timeToExtend));

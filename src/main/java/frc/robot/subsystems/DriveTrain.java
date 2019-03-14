@@ -36,6 +36,11 @@ public class DriveTrain extends Subsystem {
 
   private MecanumDrive m_drive;
   
+  // For use with Pathfinder
+	public final double kWheel_diameter = 0.2032; // Meters
+  public final double kPulsesPerRevolution = 360; // TODO: CHANGE?
+  public final double kDistanceScaler = 16; // Gear ratio plus tuning TODO: Tune
+  
   private CANEncoder frontLeftEnc;
   private CANEncoder backLeftEnc;
   private CANEncoder backRightEnc;
@@ -178,6 +183,44 @@ public class DriveTrain extends Subsystem {
     currentRotationSpeed = 0;
     drive(0, 0, 0);
   }
+  
+  // ********** Pathfinder methods ********** //
+  public void resetEncoders() {
+  }
+
+  public double getFrontLeftEncoderPosition() {
+    return frontLeftEnc.getPosition();
+  }
+
+  public double getBackLeftEncoderPosition() {
+    return backLeftEnc.getPosition();
+  }
+
+  public double getFrontRightEncoderPosition() {
+    return frontRightEnc.getPosition();
+  }
+
+  public double getbackRightEncoderPosition() {
+    return backRightEnc.getPosition();
+  }
+
+  public double getLeftEncoderAverage() {
+    return (frontLeftEnc.getPosition() + backLeftEnc.getPosition()) / 2;
+  }
+
+  public double getRightEncoderAverage() {
+    return (frontRightEnc.getPosition() + backRightEnc.getPosition()) / 2;
+  }
+  
+  public void setLeftSpeed(double speed) {
+    backLeft.set(speed);
+    frontLeft.set(speed);
+  }
+
+  public void setRightSpeed(double speed) {
+    backRight.set(speed);
+    frontRight.set(speed);
+  }
 
   public void changeIdleMode(CANSparkMax.IdleMode idleMode) {
     frontLeft.setIdleMode(idleMode);
@@ -186,6 +229,10 @@ public class DriveTrain extends Subsystem {
     backRight.setIdleMode(idleMode);
 
     currentIdleMode = idleMode;
+  }
+
+  public CANSparkMax.IdleMode getIdleMode() {
+    return currentIdleMode;
   }
   
   // ********** Methods so that updating inputs work from periodic ********** //

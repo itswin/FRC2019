@@ -43,8 +43,8 @@ public class Robot extends TimedRobot {
   }
 
   // Initialize subsystems
-  public static final DriveTrain m_driveTrain = null;
-  public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
+  public static final DriveTrain m_driveTrain = new DriveTrain();
+  // public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     Robot.m_intake.retractIntake();
     Robot.m_hatchMechanism.retractHatchExtender();
-    Robot.m_pidDriveTrain.stopDriveTrain();
+    // Robot.m_pidDriveTrain.stopDriveTrain();
     Robot.m_lift.setSetpoint(Lift.kHome);
     Robot.m_driveTrain.stop();
   }
@@ -130,8 +130,8 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
     Scheduler.getInstance().add(new IntakeBaseCommand());
 
-    m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
-    //m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
+    // m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+    m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
 
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -155,6 +155,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
 
+    /*
     if(Robot.m_pidDriveTrain.getManualDriveOn()) {
       // Sends joystick values to PIDDriveTrain
       // Slow down rotation
@@ -172,8 +173,8 @@ public class Robot extends TimedRobot {
       rotation = rotation*rotation * Math.signum(rotation);
 
       m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
-    }
-    /*
+    } */
+    
     // Slow down rotation
     double rotationScalar = .75;
 
@@ -201,7 +202,7 @@ public class Robot extends TimedRobot {
         break;
       default:
         break;
-    } */
+    }
   }
 
   @Override
@@ -213,8 +214,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
-    // m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
+    // m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+    m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
 
     // These commands needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
@@ -228,6 +229,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     
+    /*
     if(Robot.m_pidDriveTrain.getManualDriveOn()) {
       // Sends joystick values to PIDDriveTrain
       // Slow down rotation
@@ -245,9 +247,9 @@ public class Robot extends TimedRobot {
       rotation = rotation*rotation * Math.signum(rotation);
 
       m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
-    }
+    }*/
     
-    /*
+    
     // Slow down rotation
     double rotationScalar = .75;
 
@@ -275,7 +277,7 @@ public class Robot extends TimedRobot {
         break;
       default:
         break;
-    } */
+    }
   }
 
   /**
