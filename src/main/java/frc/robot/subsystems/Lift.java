@@ -17,6 +17,10 @@ import frc.robot.RobotMap;
 import frc.robot.commands.Lift.LiftCommand;
 
 public class Lift extends PIDSubsystem {
+  private double currentSpeed = 0;
+  private double inputJoystickSpeed = 0;
+  private double inputAutoSpeed = 0;
+
   private CANSparkMax leftLiftMotor;
   private CANSparkMax rightLiftMotor;
 
@@ -50,7 +54,7 @@ public class Lift extends PIDSubsystem {
   private final double kPercentTolerance = 3;
 
   public Lift() {
-    super("Lift", .1, 0, 0, 0, .01);
+    super("Lift", .06, 0, .5, 0, .01);
 
     leftLiftMotor = new CANSparkMax(RobotMap.leftLiftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     rightLiftMotor = new CANSparkMax(RobotMap.rightLiftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -72,6 +76,7 @@ public class Lift extends PIDSubsystem {
     setInputRange(minRightLiftEncoderValue - 5, maxRightLiftEncoderValue + 5);
     setAbsoluteTolerance(kAbsoluteTolerance);
     setPercentTolerance(kPercentTolerance);
+    setSetpoint(kHome);
     enable();
   }
 
@@ -94,9 +99,14 @@ public class Lift extends PIDSubsystem {
     // e.g. yourMotor.set(output);
     // System.out.println("PID: " + output);
     if(output < 0) {
-      output *= .5;
+      output *= .75;
     }
-    setPower(output);
+    
+    inputAutoSpeed = output;
+  }
+
+  public void setLeftPower(double speed) {
+    leftLiftMotor.set(speed);
   }
 
   // ********** Motor methods ********** //
@@ -105,7 +115,9 @@ public class Lift extends PIDSubsystem {
     rightLiftMotor.set(speed);
   }
 
+  // Emergency stop
   public void stopLift() {
+    currentSpeed = 0;
     leftLiftMotor.set(0);
     rightLiftMotor.set(0);
   }
@@ -164,5 +176,25 @@ public class Lift extends PIDSubsystem {
   public void setEncoderComparisons(double leftComparison, double rightComparison) {
     leftLiftEncoderComparison = leftComparison;
     rightLiftEncoderComparison = rightComparison;
+  }
+
+  public void setInputJoystickSpeed(double speed) {
+    inputJoystickSpeed = speed;
+  }
+
+  public double getInputJoystickSpeed() {
+    return inputJoystickSpeed;
+  }
+
+  public void setCurrentSpeed(double speed) {
+    currentSpeed = speed;
+  }
+
+  public double getCurrentSpeed() {
+    return currentSpeed;
+  }
+
+  public double getInputAutoSpeed() {
+    return inputAutoSpeed;
   }
 }

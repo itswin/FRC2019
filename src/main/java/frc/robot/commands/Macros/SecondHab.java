@@ -9,15 +9,16 @@ package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.Intake.*;
-import frc.robot.commands.Lift.*;
+import frc.robot.commands.Centering.*;
 import frc.robot.commands.DriveTrain.*;
+import frc.robot.commands.HabMechanism.*;
 
-public class ShootCargoIntoShip extends CommandGroup {
+public class SecondHab extends CommandGroup {
+  private final double timeToExtend = 1;
   /**
    * Add your docs here.
    */
-  public ShootCargoIntoShip() {
+  public SecondHab() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -34,17 +35,19 @@ public class ShootCargoIntoShip extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addParallel(new CargoShipHeight());
-    addParallel(new SlowLiftIntake());
-    addSequential(new WaitCommand(.5));
-    addParallel(new RetractIntake());
-    addSequential(new WaitCommand(.25));
-    addSequential(new AutoForward(.3), .35);
-    addSequential(new WaitCommand(.5));
-    addSequential(new OuttakeCommand());
-    addSequential(new WaitCommand(.5));
-    addParallel(new StopIntakeCommand());
-    addSequential(new AutoBackup(-.3), .15);
-    addSequential(new HomeHeight());
+    // addSequential(new GoToAngle(180));
+    addSequential(new AutoBackup(-.1), .1);
+    addSequential(new ToggleFrontPistons());
+    addSequential(new WaitCommand(timeToExtend));
+    addSequential(new AutoForward(.3), 1.5);
+    addSequential(new ToggleBackPistons());
+    addSequential(new WaitCommand(timeToExtend));
+    addSequential(new AutoForward(.3), .5);
+    addSequential(new ToggleFrontPistons());
+    addSequential(new WaitCommand(timeToExtend));
+    addSequential(new AutoForward(.3), 2);
+    addSequential(new ToggleBackPistons());
+    addSequential(new WaitCommand(timeToExtend));
+    addSequential(new AutoForward(.3), .25);
   }
 }

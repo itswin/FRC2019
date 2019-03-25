@@ -9,24 +9,26 @@ package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
-import frc.robot.subsystems.Lift;
 
 /**
  * Add your docs here.
  */
-public class StationHatchHeight extends InstantCommand {
+public class GoToLiftHeight extends InstantCommand {
+  private double setpoint;
   /**
    * Add your docs here.
    */
-  public StationHatchHeight() {
+  public GoToLiftHeight(double goal) {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    setpoint = goal;
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_lift.setSetpoint(Lift.kStationHatch);
+    Robot.m_lift.setSetpoint(setpoint);
   }
+
 }

@@ -11,7 +11,12 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class LiftCommand extends Command {
+  private boolean canMove;
   private boolean wasMoving;
+  private double kMaxSpeedDeltaPerLoop = .15;
+  private double kMaxNegSpeedDeltaPerLoop = .05;
+  private final boolean rampRateEnabled = true;
+
   public LiftCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
@@ -27,40 +32,57 @@ public class LiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.m_oi.driveController.getRightTrigger() > 0) {
-      // Right trigger to ascend
-      // Programatically stops motors at set encoder limits
-      if(Robot.m_lift.canLeftLiftAscend() && Robot.m_lift.canRightLiftAscend()) {
-        // Disables the lift PID if manual input is supplied
-        if(!wasMoving) {
-          wasMoving = true;
-          Robot.m_lift.disable();
-        }
-        Robot.m_lift.setPower(-Robot.m_oi.driveController.getRightTrigger());
-      } else {
-        Robot.m_lift.stopLift();
+    canMove = true;
+    double inputSpeed = Robot.m_lift.getInputJoystickSpeed();
+    double currentSpeed = Robot.m_lift.getCurrentSpeed();
+
+    if(inputSpeed != 0) {
+      // Disables the lift PID if manual input is supplied
+      if(!wasMoving) {
+        wasMoving = true;
+        Robot.m_lift.disable();
       }
-    } else if(Robot.m_oi.driveController.getLeftTrigger() > 0) {
-      // Left trigger to descend
-      if(Robot.m_lift.canLeftLiftDescend() && Robot.m_lift.canRightLiftDescend()) {
-        if(!wasMoving) {
-          wasMoving = true;
-          Robot.m_lift.disable();
-        }
-        Robot.m_lift.setPower(Robot.m_oi.driveController.getLeftTrigger());
-      } else {
-        Robot.m_lift.stopLift();
-      }
-    } else {
+    } else if(wasMoving) {
+      wasMoving = false;
+      canMove = false;
       Robot.m_lift.stopLift();
-      // Reenables PID if no input is supplied
-      if(wasMoving) {
-        wasMoving = false;
-        Robot.m_lift.enable();
-        Robot.m_lift.setSetpoint(Robot.m_lift.getEncoderAverage());
-      }
+      Robot.m_lift.setSetpoint(Robot.m_lift.getEncoderAverage());
+      Robot.m_lift.enable();
+    } else {
+      inputSpeed = Robot.m_lift.getInputAutoSpeed();
     }
 
+    // Programatically stops motors at set encoder limits
+    if((inputSpeed < 0 && !(Robot.m_lift.canLeftLiftAscend() && Robot.m_lift.canRightLiftAscend())) ||
+      (inputSpeed > 0 && !(Robot.m_lift.canLeftLiftDescend() && Robot.m_lift.canRightLiftDescend()))) {
+      canMove = false;
+      Robot.m_lift.stopLift();
+    }
+
+    // Limit the rate you can change speed for all directions
+    if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
+      currentSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && currentSpeed < 0 && inputSpeed < currentSpeed - kMaxNegSpeedDeltaPerLoop) {
+      // Use a different delta when the lift is falling and accelerating downwards
+      currentSpeed -= kMaxNegSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {
+      // Use the normal delta when the lift is falling and accelerating upwards
+      currentSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentSpeed = inputSpeed;
+    }
+
+    // canMove turns false whenever the lift HAS to stop
+    if(!canMove) {
+      currentSpeed = 0;
+    }
+
+    Robot.m_lift.setCurrentSpeed(currentSpeed);
+
+    // System.out.println(currentSpeed);
+    Robot.m_lift.setPower(Robot.m_lift.getCurrentSpeed());
+    // Robot.m_lift.setLeftPower(Robot.m_lift.getCurrentSpeed());
+    
     // Resets encoders when limit switches are hit
     if(Robot.m_lift.getLeftLimitSwitchVal() && Robot.m_lift.getRightLimitSwitchVal()) {
       Robot.m_lift.setEncoderComparisons(Robot.m_lift.getTrueLeftLiftEncoder(), Robot.m_lift.getTrueRightLiftEncoder());

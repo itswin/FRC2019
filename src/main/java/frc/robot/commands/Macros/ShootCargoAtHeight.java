@@ -9,20 +9,16 @@ package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-
-import frc.robot.commands.Lift.*;
-import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.DriveTrain.*;
-import frc.robot.commands.NavX.*;
+import frc.robot.commands.Intake.*;
+import frc.robot.commands.Lift.*;
 import frc.robot.subsystems.Lift;
 
-public class GrabHatchFromStation extends CommandGroup {
-  public static final double timeToExtend = .5; // in seconds
-
+public class ShootCargoAtHeight extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public GrabHatchFromStation() {
+  public ShootCargoAtHeight(double height) {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -39,14 +35,17 @@ public class GrabHatchFromStation extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addSequential(new ResetNavX());
-    addParallel(new ToggleHatchExtenderState());
-    addParallel(new AutoBackup(-.1), timeToExtend);
-    addSequential(new WaitCommand(timeToExtend));
-    addSequential(new GoToLiftHeight(Lift.kStationHatch));
-    addSequential(new WaitCommand(timeToExtend));
-    addSequential(new ToggleHatchExtenderState());
-    addSequential(new WaitCommand(timeToExtend));
+    addParallel(new GoToLiftHeight(height));
+    addParallel(new SlowLiftIntake());
+    addSequential(new WaitCommand(.25));
+    addParallel(new RetractIntake());
+    addSequential(new WaitForLift());
+    addSequential(new AutoForward(.2), .35);
+    addSequential(new WaitCommand(.25));
+    addSequential(new OuttakeCommand());
+    addSequential(new WaitCommand(.5));
+    addParallel(new StopIntakeCommand());
+    addSequential(new AutoBackup(-.2), .15);
     addSequential(new GoToLiftHeight(Lift.kHome));
   }
 }

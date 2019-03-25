@@ -8,34 +8,19 @@
 package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.commands.HatchMechanism.*;
-import frc.robot.commands.Lift.HomeHeight;
 import frc.robot.commands.DriveTrain.*;
+import frc.robot.commands.HatchMechanism.*;
+import frc.robot.commands.Lift.*;
+import frc.robot.subsystems.Lift;
 
 public class LaunchHatch extends CommandGroup {
   /**
    * Add your docs here.
    */
   public LaunchHatch() {
-    // Add Commands here:
-    // e.g. addSequential(new Command1());
-    // addSequential(new Command2());
-    // these will run in order.
-
-    // To run multiple commands at the same time,
-    // use addParallel()
-    // e.g. addParallel(new Command1());
-    // addSequential(new Command2());
-    // Command1 and Command2 will run in parallel.
-
-    // A command group will require all of the subsystems that each member
-    // would require.
-    // e.g. if Command1 requires chassis, and Command2 requires arm,
-    // a CommandGroup containing them would require both the chassis and the
-    // arm.
     addParallel(new ToggleHatchLauncherState());
     addSequential(new AutoBackup(-.3), .4);
     addSequential(new ToggleHatchLauncherState());
-    addSequential(new HomeHeight());
+    addSequential(new GoToLiftHeight(Lift.kHome));
   }
 }
