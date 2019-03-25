@@ -9,13 +9,13 @@ package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.DriveTrain.*;
-import frc.robot.commands.Intake.*;
+import frc.robot.commands.Intake.IntakeTimedStop;
 
-public class FollowCargo extends CommandGroup {
+public class StopFollowingCargo extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public FollowCargo() {
+  public StopFollowingCargo() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -32,9 +32,8 @@ public class FollowCargo extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addSequential(new ExtendIntake());
-    addSequential(new IntakeCommand());
-    addSequential(new ResetRotationPID());
-    addSequential(new EnableCargoPID());
+    addSequential(new DisableCargoPID());
+    addSequential(new EnableRotationPID());
+    addSequential(new IntakeTimedStop(1));
   }
 }

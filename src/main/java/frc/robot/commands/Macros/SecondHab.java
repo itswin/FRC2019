@@ -39,15 +39,15 @@ public class SecondHab extends CommandGroup {
     addSequential(new AutoBackup(-.1), .1);
     addSequential(new ToggleFrontPistons());
     addSequential(new WaitCommand(timeToExtend));
-    addSequential(new AutoForward(.3), 1.5);
+    addSequential(new AutoForward(.3), .75);
+    addSequential(new AutoForward(.15), .75);
     addSequential(new ToggleBackPistons());
     addSequential(new WaitCommand(timeToExtend));
-    addSequential(new AutoForward(.3), .5);
+    addSequential(new AutoForward(.15), .2);
     addSequential(new ToggleFrontPistons());
     addSequential(new WaitCommand(timeToExtend));
-    addSequential(new AutoForward(.3), 2);
+    addSequential(new AutoForward(.3), .75);
+    addSequential(new AutoForward(.15), .75);
     addSequential(new ToggleBackPistons());
-    addSequential(new WaitCommand(timeToExtend));
-    addSequential(new AutoForward(.3), .25);
   }
 }

@@ -17,7 +17,8 @@ public class AutoBackup extends Command {
   public AutoBackup(double speed) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-
+    requires(Robot.m_driveTrain);
+    
     // Make sure the robot actually backs up
     if(speed > 0) {
       speed *= -1;

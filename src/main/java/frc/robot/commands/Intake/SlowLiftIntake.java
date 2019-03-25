@@ -30,7 +30,7 @@ public class SlowLiftIntake extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_intake.setSpeed(0, -intakeSpeed);
+    Robot.m_intake.setCurrentIntakeSpeeds(0, -intakeSpeed);
   }
 
 }

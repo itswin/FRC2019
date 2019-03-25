@@ -22,7 +22,6 @@ public class CenterHorizontallyWhileDriving extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    System.out.println("Centering horizontally");
     Robot.m_driveTrain.driveState = DriveTrain.DriveState.kAutoHorizontal;
     Robot.m_driveTrain.horizontalPIDController.enable();
   }
@@ -44,7 +43,6 @@ public class CenterHorizontallyWhileDriving extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    System.out.println("Finished centering horizontally");
     Robot.m_driveTrain.driveState = DriveTrain.DriveState.kManual;
     Robot.m_driveTrain.horizontalPIDController.reset();
   }
@@ -53,7 +51,6 @@ public class CenterHorizontallyWhileDriving extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    System.out.println("Centering horizontally interrupted");
     Robot.m_driveTrain.driveState = DriveTrain.DriveState.kManual;
     Robot.m_driveTrain.horizontalPIDController.reset();
   }

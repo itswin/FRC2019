@@ -26,7 +26,7 @@ public class EnableRotationPID extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_driveTrain.rotationPIDController.reset();
+    Robot.m_driveTrain.rotationPIDController.setSetpoint(Robot.getComparedYaw());
     Robot.m_driveTrain.rotationPIDController.enable();
   }
 

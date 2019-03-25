@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.Lift.LiftCommand;
 
 public class Lift extends PIDSubsystem {
   private double currentSpeed = 0;
@@ -52,6 +51,12 @@ public class Lift extends PIDSubsystem {
   // PID constants
   private final double kAbsoluteTolerance = 1;
   private final double kPercentTolerance = 3;
+  
+  // Vars used in periodic
+  private boolean canMove;
+  private double kMaxSpeedDeltaPerLoop = .15;
+  private double kMaxNegSpeedDeltaPerLoop = .05;
+  private final boolean rampRateEnabled = true;
 
   public Lift() {
     super("Lift", .06, 0, .5, 0, .01);
@@ -82,7 +87,58 @@ public class Lift extends PIDSubsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new LiftCommand());
+  }
+
+  @Override
+  public void periodic() {
+    canMove = true;
+    double inputSpeed = inputJoystickSpeed;
+
+    if(inputSpeed != 0) {
+      // Disables the lift PID if manual input is supplied
+      if(getPIDController().isEnabled()) {
+        disable();
+      }
+    } else if(!getPIDController().isEnabled()) {
+      canMove = false;
+      stopLift();
+      setSetpoint(getEncoderAverage());
+      enable();
+    } else {
+      inputSpeed = inputAutoSpeed;
+    }
+
+    // Programatically stops motors at set encoder limits
+    if((inputSpeed < 0 && !(canLeftLiftAscend() && canRightLiftAscend())) ||
+      (inputSpeed > 0 && !(canLeftLiftDescend() && canRightLiftDescend()))) {
+      canMove = false;
+      stopLift();
+    }
+
+    // Limit the rate you can change speed for all directions
+    if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
+      currentSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && currentSpeed < 0 && inputSpeed < currentSpeed - kMaxNegSpeedDeltaPerLoop) {
+      // Use a different delta when the lift is falling and accelerating downwards
+      currentSpeed -= kMaxNegSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {
+      // Use the normal delta when the lift is falling and accelerating upwards
+      currentSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentSpeed = inputSpeed;
+    }
+
+    // canMove turns false whenever the lift HAS to stop
+    if(!canMove) {
+      currentSpeed = 0;
+    }
+
+    setPower(currentSpeed);
+    
+    // Resets encoders when limit switches are hit
+    if(leftLiftLimitSwitch.get() && rightLiftLimitSwitch.get()) {
+      setEncoderComparisons(getTrueLeftLiftEncoder(), getTrueRightLiftEncoder());
+    }
   }
 
   @Override
@@ -165,14 +221,6 @@ public class Lift extends PIDSubsystem {
     return maxRightLiftEncoderValue;
   }
 
-  public boolean getLeftLimitSwitchVal() {
-    return leftLiftLimitSwitch.get();
-  }
-
-  public boolean getRightLimitSwitchVal() {
-    return rightLiftLimitSwitch.get();
-  }
-
   public void setEncoderComparisons(double leftComparison, double rightComparison) {
     leftLiftEncoderComparison = leftComparison;
     rightLiftEncoderComparison = rightComparison;
@@ -182,19 +230,7 @@ public class Lift extends PIDSubsystem {
     inputJoystickSpeed = speed;
   }
 
-  public double getInputJoystickSpeed() {
-    return inputJoystickSpeed;
-  }
-
   public void setCurrentSpeed(double speed) {
     currentSpeed = speed;
-  }
-
-  public double getCurrentSpeed() {
-    return currentSpeed;
-  }
-
-  public double getInputAutoSpeed() {
-    return inputAutoSpeed;
   }
 }

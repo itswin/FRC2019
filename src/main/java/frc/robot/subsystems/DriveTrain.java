@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.PIDs.*;
-import frc.robot.commands.DriveTrain.DriveTrainBaseCommand;
 
 /**
  * Add your docs here.
@@ -61,7 +60,7 @@ public class DriveTrain extends Subsystem {
   private final double kRotationInputMin = -180;
   private final double kRotationInputMax = 180;
   private final double kRotationAbsoluteTolerance = 2;
-  public static final double rotationThreshold = .5;
+  private final double kRotationThreshold = .5;
   public PIDController rotationPIDController;
   public DriveTrainRotationPIDOutput rotationPIDOutput;
 
@@ -80,12 +79,12 @@ public class DriveTrain extends Subsystem {
   private double kHorizontalOutputMin = -.3;
   private final double kHorizontalPeriod = 0.01;
   private final double kHorizontalAbsoluteTolerance = .5;
-  public static final double kHorizontalSetpoint = -.54; // -.9
+  public static final double kHorizontalSetpoint = 0; // -.54
   public PIDController horizontalPIDController;
   public HorizontalDistancePIDSource horizontalDistancePIDSource;
   public DriveTrainStrafePIDOutput strafePIDOutput;
 
-  private final double kCargoRotationP = .07;
+  private final double kCargoRotationP = .06;
   private final double kCargoRotationI = 0;
   private final double kCargoRotationD = 0;
   private final double kCargoRotationF = 0;
@@ -117,6 +116,10 @@ public class DriveTrain extends Subsystem {
   public enum DriveState {
     kAuto, kManual, kAutoHorizontal
   }
+  
+  // Vars used in periodic
+  private final double kMaxSpeedDeltaPerLoop = .1;
+  private final boolean rampRateEnabled = true;
 
   public DriveTrain() {
     frontLeft = new CANSparkMax(RobotMap.frontLeftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -143,7 +146,76 @@ public class DriveTrain extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
-    setDefaultCommand(new DriveTrainBaseCommand());
+  }
+
+  @Override
+  public void periodic() {
+    double inputSpeed = 0;
+    double inputStrafeSpeed = 0;
+    double inputRotationSpeed = inputJoystickRotationSpeed;
+
+    switch(driveState) {
+      case kManual:
+        inputSpeed = inputJoystickSpeed;
+        inputStrafeSpeed = inputJoystickStrafeSpeed;
+        break;
+      case kAuto:
+        inputSpeed = inputAutoSpeed;
+        inputStrafeSpeed = inputAutoStrafeSpeed;
+        break;
+      case kAutoHorizontal:
+        inputStrafeSpeed = inputAutoStrafeSpeed;
+        inputSpeed = inputJoystickSpeed;
+        break;
+    }
+
+    if(inputRotationSpeed != 0) {
+      // Disables the rotation PID if there is a rotation input
+      if(rotationPIDController.isEnabled()) {
+        rotationPIDController.disable();
+      }
+    } else if(!rotationPIDController.isEnabled() && !cargoRotationPIDController.isEnabled()) {
+      // Reenables the PID if the robot was just manually being rotated and isn't anymore
+      // Waits for the rotation momentum to stop
+      if(Math.abs(Robot.m_navX.getRate()) < kRotationThreshold) {
+        rotationPIDController.setSetpoint(Robot.getComparedYaw());
+        rotationPIDController.enable();
+      }
+    } else {
+      // Only give rotation correction if robot isn't rotating manually
+      inputRotationSpeed = inputAutoRotationSpeed;
+    }
+    
+    // Limit the rate you can change speed for all directions
+    if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
+      currentSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {
+      currentSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentSpeed = inputSpeed;
+    }
+
+    if(rampRateEnabled && inputStrafeSpeed > currentStrafeSpeed + kMaxSpeedDeltaPerLoop) {
+      currentStrafeSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputStrafeSpeed < currentStrafeSpeed - kMaxSpeedDeltaPerLoop) {
+      currentStrafeSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentStrafeSpeed = inputStrafeSpeed;
+    }
+
+    if(rampRateEnabled && inputRotationSpeed > currentRotationSpeed + kMaxSpeedDeltaPerLoop) {
+      currentRotationSpeed += kMaxSpeedDeltaPerLoop;
+    } else if(rampRateEnabled && inputRotationSpeed < currentRotationSpeed - kMaxSpeedDeltaPerLoop) {
+      currentRotationSpeed -= kMaxSpeedDeltaPerLoop;
+    } else {
+      currentRotationSpeed = inputRotationSpeed;
+    }
+    
+    // Robot oriented driving
+    drive(currentSpeed, currentStrafeSpeed, currentRotationSpeed);
+
+    // Field oriented driving
+    // Robot.m_driveTrain.drive(Robot.m_driveTrain.getCurrentSpeed(), Robot.m_driveTrain.getCurrentStrafeSpeed(), Robot.m_driveTrain.getCurrentRotationSpeed(), -Robot.m_navX.getYaw());
   }
 
   // Needs to be done after DriveTrain is initialized
@@ -267,18 +339,6 @@ public class DriveTrain extends Subsystem {
     inputAutoRotationSpeed = rotation;
   }
 
-  public double getInputAutoSpeed() {
-    return inputAutoSpeed;
-  }
-
-  public double getInputAutoStrafeSpeed() {
-    return inputAutoStrafeSpeed;
-  }
-
-  public double getInputAutoRotationSpeed() {
-    return inputAutoRotationSpeed;
-  }
-
   public void setInputAutoSpeed(double speed) {
     inputAutoSpeed = speed;
   }
@@ -308,30 +368,6 @@ public class DriveTrain extends Subsystem {
 
   public void setCurrentRotationSpeed(double rotation) {
     currentRotationSpeed = rotation;
-  }
-
-  public double getCurrentSpeed() {
-    return currentSpeed;
-  }
-
-  public double getCurrentStrafeSpeed() {
-    return currentStrafeSpeed;
-  }
-
-  public double getCurrentRotationSpeed() {
-    return currentRotationSpeed;
-  }
-
-  public void enableCenteringPIDs() {
-    horizontalPIDController.enable();
-  }
-
-  public void disableCenteringPIDs() {
-    horizontalPIDController.disable();
-  }
-
-  public boolean centeringPIDsOnTarget() {
-    return horizontalPIDController.onTarget();
   }
   
   public double getClosestScoringAngle() {

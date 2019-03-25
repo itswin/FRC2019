@@ -55,22 +55,19 @@ public class OI {
     driveController = new LogitechController(0);
 
     // Intake
-    driveController.rightBumperButton.whenPressed(new IntakeCommand());
-    driveController.rightBumperButton.whenReleased(new IntakeSmoothStopCommand());
-    driveController.leftBumperButton.whenPressed(new OuttakeCommand());
+    driveController.leftJoystickButton.whileHeld(new IntakeCommand());
+    driveController.leftJoystickButton.whenReleased(new IntakeSmoothStopCommand());
+    driveController.leftBumperButton.whileHeld(new OuttakeCommand());
     driveController.leftBumperButton.whenReleased(new StopIntakeCommand());
     driveController.xButton.whenPressed(new ToggleIntakeExtensionCommand());
 
     // Lift
-    // driveController.aButton.whileActive(new RocketCargoPositioningCommand()); // was whileActive
-    // driveController.aButton.whenReleased(new RocketHatchPositioningCommand());
-    // driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
     driveController.povDownButton.whenPressedWith(new ShootCargoAtHeight(Lift.kFirstRocketCargoHole), driveController.aButton);
     driveController.povRightButton.whenPressedWith(new ShootCargoAtHeight(Lift.kSecondRocketCargoHole), driveController.aButton);
     driveController.povUpButton.whenPressedWith(new ShootCargoAtHeight(Lift.kThirdRocketCargoHole), driveController.aButton);
-    driveController.povDownButton.whenNotPressedWith(new GoToLiftHeight(Lift.kHome), driveController.aButton);
-    driveController.povRightButton.whenNotPressedWith(new GoToLiftHeight(Lift.kSecondRocketHatch), driveController.aButton);
-    driveController.povUpButton.whenNotPressedWith(new GoToLiftHeight(Lift.kThirdRocketHatch), driveController.aButton);
+    driveController.povDownButton.whenNotPressedWith(new LaunchHatchAtHeight(Lift.kHome), driveController.aButton);
+    driveController.povRightButton.whenNotPressedWith(new LaunchHatchAtHeight(Lift.kSecondRocketHatch), driveController.aButton);
+    driveController.povUpButton.whenNotPressedWith(new LaunchHatchAtHeight(Lift.kThirdRocketHatch), driveController.aButton);
     driveController.povLeftButton.whenNotPressedWith(new ShootCargoAtHeight(Lift.kCargoShip), driveController.aButton);
 
     // Hatch Mechanism
@@ -78,11 +75,11 @@ public class OI {
     driveController.yButton.whenPressed(new LaunchHatch());
     
     // Vision tracking
-    driveController.rightJoystickButton.whenPressed(new LineUpWhileDriving()); // was whileActive
+    driveController.rightJoystickButton.whileActive(new LineUpWhileDriving()); // was whileActive
     driveController.rightJoystickButton.whenReleased(new CancelLineupAndTurnOffLEDs());
 
-    driveController.leftJoystickButton.whileHeld(new FollowCargo());
-    driveController.leftJoystickButton.whenReleased(new IntakeTimedStop(1));
+    driveController.rightBumperButton.whenPressed(new FollowCargo());
+    driveController.rightBumperButton.whenReleased(new StopFollowingCargo());
     
     // Hab
     driveController.backButton.whenPressed(new SecondHab());

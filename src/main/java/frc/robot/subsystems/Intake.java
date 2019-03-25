@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class Intake extends Subsystem {
@@ -18,11 +19,13 @@ public class Intake extends Subsystem {
   private DoubleSolenoid intakeSolenoid;
 
   // Have constants to compare to so magic values aren't floating around
-  public static final DoubleSolenoid.Value intakeRetractedVal = DoubleSolenoid.Value.kReverse;
-  public static final DoubleSolenoid.Value intakeExtendedVal = DoubleSolenoid.Value.kForward;
-  public DoubleSolenoid.Value intakeExtensionState = intakeRetractedVal;
+  public static final DoubleSolenoid.Value kIntakeRetractedVal = DoubleSolenoid.Value.kReverse;
+  public static final DoubleSolenoid.Value kIntakeExtendedVal = DoubleSolenoid.Value.kForward;
+  public DoubleSolenoid.Value intakeExtensionState = kIntakeRetractedVal;
 
   public static final double k_liftIntakeSpeed = -1;
+  private double currentFrontIntakeSpeed = 0;
+  private double currentLiftIntakeSpeed = 0;
 
   public Intake() {
     frontIntake = new VictorSP(RobotMap.frontIntakeMotorPort);
@@ -37,35 +40,50 @@ public class Intake extends Subsystem {
     // setDefaultCommand(new IntakeBaseCommand());
   }
 
+  @Override
+  public void periodic() {
+    if(Robot.m_lift.getEncoderAverage() > Lift.kFirstRocketCargoHole && 
+        intakeExtensionState == kIntakeExtendedVal) {
+      Robot.m_intake.retractIntake();
+    }
+
+    setPower(currentFrontIntakeSpeed, currentLiftIntakeSpeed);
+  }
+
   // ********** Motor methods ********** //
   public void intake() {
-    frontIntake.set(-1);
-    liftIntake.set(k_liftIntakeSpeed);
+    currentFrontIntakeSpeed = -1;
+    currentLiftIntakeSpeed = k_liftIntakeSpeed;
   }
 
   public void outtake() {
-    frontIntake.set(1);
-    liftIntake.set(1);
+    currentFrontIntakeSpeed = 1;
+    currentLiftIntakeSpeed = 1;
   }
 
   public void stopIntake() {
-    frontIntake.set(0);
-    liftIntake.set(0);
+    currentFrontIntakeSpeed = 0;
+    currentLiftIntakeSpeed = 0;
   }
 
-  public void setSpeed(double frontIntakeSpeed, double liftIntakeSpeed) {
+  public void setCurrentIntakeSpeeds(double frontIntakeSpeed, double liftIntakeSpeed) {
+    currentFrontIntakeSpeed = frontIntakeSpeed;
+    currentLiftIntakeSpeed = liftIntakeSpeed;
+  }
+
+  public void setPower(double frontIntakeSpeed, double liftIntakeSpeed) {
     frontIntake.set(frontIntakeSpeed);
     liftIntake.set(liftIntakeSpeed);
   }
 
   // ********** Solenoid methods ********** //
   public void extendIntake() {
-    intakeExtensionState = intakeExtendedVal;
+    intakeExtensionState = kIntakeExtendedVal;
     intakeSolenoid.set(intakeExtensionState);
   }
 
   public void retractIntake() {
-    intakeExtensionState = intakeRetractedVal;
+    intakeExtensionState = kIntakeRetractedVal;
     intakeSolenoid.set(intakeExtensionState);
   }
 }

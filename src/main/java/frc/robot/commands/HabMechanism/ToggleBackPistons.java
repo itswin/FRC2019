@@ -29,10 +29,8 @@ public class ToggleBackPistons extends InstantCommand {
   protected void initialize() {
     if(Robot.m_habMechanism.getBackPistonExtensionState() == HabMechanism.backSolenoidRetractedVal) {
       Robot.m_habMechanism.extendBackPistons();
-      System.out.println("Equals");
     } else {
       Robot.m_habMechanism.retractBackPistons();
-      System.out.println("Does not equal");
     }
   }
 

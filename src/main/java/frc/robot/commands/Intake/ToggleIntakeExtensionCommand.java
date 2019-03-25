@@ -19,13 +19,12 @@ public class ToggleIntakeExtensionCommand extends InstantCommand {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_intake);
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    if(Robot.m_intake.intakeExtensionState == Intake.intakeRetractedVal) {
+    if(Robot.m_intake.intakeExtensionState == Intake.kIntakeRetractedVal) {
       Robot.m_intake.extendIntake();
     } else {
       Robot.m_intake.retractIntake();

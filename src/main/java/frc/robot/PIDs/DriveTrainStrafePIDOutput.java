@@ -26,6 +26,6 @@ public class DriveTrainStrafePIDOutput implements PIDOutput {
         }
 
         Robot.m_driveTrain.setInputAutoStrafeSpeed(sign * Robot.m_driveTrain.kHorizontalBaseline + output);
-        System.out.println(sign * Robot.m_driveTrain.kHorizontalBaseline + output);
+        // System.out.println(sign * Robot.m_driveTrain.kHorizontalBaseline + output);
     }
 }

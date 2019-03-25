@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Intake;
+package frc.robot.commands.DriveTrain;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
@@ -13,26 +13,20 @@ import frc.robot.Robot;
 /**
  * Add your docs here.
  */
-public class IntakeSetSpeed extends InstantCommand {
-  private double frontSpeed;
-  private double liftSpeed;
+public class EnableCargoPID extends InstantCommand {
   /**
    * Add your docs here.
    */
-  public IntakeSetSpeed(double fSpeed, double lSpeed) {
+  public EnableCargoPID() {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_intake);
-    
-    frontSpeed = fSpeed;
-    liftSpeed = lSpeed;
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_intake.setCurrentIntakeSpeeds(frontSpeed, liftSpeed);
+    Robot.m_driveTrain.cargoRotationPIDController.enable();
   }
 
 }

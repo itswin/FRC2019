@@ -21,6 +21,8 @@ public class ResetRotationPID extends InstantCommand {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    requires(Robot.m_driveTrain);
+    
   }
 
   // Called once when the command executes

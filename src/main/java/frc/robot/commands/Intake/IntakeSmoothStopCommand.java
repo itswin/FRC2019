@@ -37,7 +37,7 @@ public class IntakeSmoothStopCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.m_intake.setSpeed(currentIntakeSpeed, currentIntakeSpeed);
+    Robot.m_intake.setCurrentIntakeSpeeds(currentIntakeSpeed, currentIntakeSpeed);
 
     currentIntakeSpeed += speedDelta;
     count++;

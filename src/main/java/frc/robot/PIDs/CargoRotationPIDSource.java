@@ -44,7 +44,7 @@ public class CargoRotationPIDSource implements PIDSource {
         double error = -xDisplacement / Math.sqrt(contourArea);
         double sign = Math.signum(error);
         error = sign * Math.sqrt(error * sign);
-        System.out.println("Horizontal Source: " + error);
+        // System.out.println("Horizontal Source: " + error);
         // Smaller movements at a closer distance (when the contour is larger)
         // Square root to be less sensitive
         return error - DriveTrain.kCargoRotationSetpoint;

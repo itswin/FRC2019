@@ -16,6 +16,7 @@ public class AutoForward extends Command {
   public AutoForward(double speed) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    requires(Robot.m_driveTrain);
 
     // Prevent user error; make sure the robot actually goes forward
     if(speed < 0) {

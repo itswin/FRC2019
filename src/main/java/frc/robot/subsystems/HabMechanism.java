@@ -49,7 +49,6 @@ public class HabMechanism extends Subsystem {
   }
 
   public void retractBackPistons() {
-    System.out.println("Retracting");
     backPistonSolenoid.set(backSolenoidRetractedVal);
   }
   
@@ -58,7 +57,6 @@ public class HabMechanism extends Subsystem {
   }
   
   public void extendBackPistons() {
-    System.out.println("Extending");
     backPistonSolenoid.set(!backSolenoidRetractedVal);
   }
 }
