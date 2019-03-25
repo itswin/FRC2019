@@ -18,8 +18,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Intake.IntakeBaseCommand;
-import frc.robot.commands.Lift.RocketHatchPositioningCommand;
 import frc.robot.subsystems.*;
 
 /**
@@ -46,15 +44,13 @@ public class Robot extends TimedRobot {
 
   // Initialize subsystems
   public static final DriveTrain m_driveTrain = new DriveTrain();
-  // public static final PIDDriveTrain m_pidDriveTrain = new PIDDriveTrain();
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
   public static final HabMechanism m_habMechanism = new HabMechanism();
-  public static final AButton m_aButton = new AButton();
-  // public static final Paths m_paths = new Paths();
-  public static CenteringHorizontal m_cH = new CenteringHorizontal();
+  public static final CenteringHorizontal m_cH = new CenteringHorizontal();
   
+  // Camera vars
   private UsbCamera camera;
   private static final int kImgWidth = 320;
   private static final int kImgHeight = 240;
@@ -145,8 +141,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // These commands needs to be started manually once
-    Scheduler.getInstance().add(new RocketHatchPositioningCommand());
-    Scheduler.getInstance().add(new IntakeBaseCommand());
+    // Scheduler.getInstance().add(new RocketHatchPositioningCommand());
+    // Scheduler.getInstance().add(new IntakeBaseCommand());
 
     // m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
     m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
@@ -227,12 +223,10 @@ public class Robot extends TimedRobot {
     }
     
     m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
-    m_habMechanism.retractBackPistons();
-    m_habMechanism.retractFrontPistons();
 
     // These commands needs to be started manually once
-    Scheduler.getInstance().add(new RocketHatchPositioningCommand());
-    Scheduler.getInstance().add(new IntakeBaseCommand());
+    // Scheduler.getInstance().add(new RocketHatchPositioningCommand());
+    // Scheduler.getInstance().add(new IntakeBaseCommand());
   }
 
   /**
