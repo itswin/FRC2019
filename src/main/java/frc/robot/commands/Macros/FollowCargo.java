@@ -5,18 +5,17 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Centering;
+package frc.robot.commands.Macros;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.Limelight.SetPipelineLEDMode;
-import frc.robot.commands.Limelight.SetVisionTargetPipeline;
+import frc.robot.commands.Centering.RotateToCargo;
+import frc.robot.commands.Intake.*;
 
-public class LineUpWhileDriving extends CommandGroup {
+public class FollowCargo extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public LineUpWhileDriving() {
+  public FollowCargo() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -33,11 +32,8 @@ public class LineUpWhileDriving extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addParallel(new SetPipelineLEDMode());
-    addParallel(new SetVisionTargetPipeline());
-    addSequential(new GoToClosestScoringAngle());
-    addSequential(new WaitForRotation());
-    addSequential(new WaitCommand(.25));
-    addSequential(new CenterHorizontallyWhileDriving());
+    addSequential(new ExtendIntake());
+    addSequential(new IntakeCommand());
+    addSequential(new RotateToCargo());
   }
 }

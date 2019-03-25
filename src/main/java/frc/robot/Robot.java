@@ -9,7 +9,9 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -48,17 +50,14 @@ public class Robot extends TimedRobot {
   public static final Lift m_lift = new Lift();
   public static final Intake m_intake = new Intake();
   public static final HatchMechanism m_hatchMechanism = new HatchMechanism();
+  public static final HabMechanism m_habMechanism = new HabMechanism();
+  public static final AButton m_aButton = new AButton();
   // public static final Paths m_paths = new Paths();
-  public static CenteringRotation m_cR = new CenteringRotation();
   public static CenteringHorizontal m_cH = new CenteringHorizontal();
-  public static CenteringVertical m_cV = new CenteringVertical();
   
-  // private UsbCamera camera;
-  // private VisionThread visionThread;
-  // private static final int kImgHeight = 480;
-  // private static final int kImgWidth = 640;
-  // private double centerX = 0;
-  // private final Object imgLock = new Object();
+  private UsbCamera camera;
+  private static final int kImgWidth = 320;
+  private static final int kImgHeight = 240;
 
   private Command m_autonomousCommand;
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -76,6 +75,13 @@ public class Robot extends TimedRobot {
     
     m_driveTrain.initPIDs();
     m_driveTrain.zeroAngle = 0;
+    
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+
+    camera = CameraServer.getInstance().startAutomaticCapture();
+    camera.setResolution(kImgWidth, kImgHeight);
+    camera.setExposureManual(5);
+    camera.setFPS(20);
   }
 
   /**
@@ -92,6 +98,18 @@ public class Robot extends TimedRobot {
     // System.out.println(m_lift.getLeftLimitSwitchVal() + " " + m_lift.getRightLimitSwitchVal());
     // System.out.println("Delta angle: " + m_navX.getAngle());
     // System.out.println("Setpoint a: " + m_pidDriveTrain.getSetpoint());
+    
+    // double xDisplacement = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    // double contourArea = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
+    
+    // // Avoid divide by 0 errors
+    // if(contourArea == 0) {
+    //     contourArea = 1;
+    // }
+    // double error = -xDisplacement / Math.sqrt(contourArea);
+    // double sign = Math.signum(error);
+    // error = sign * Math.sqrt(error * sign);
+    // System.out.println("Horizontal Source: " + error);
   }
 
   /**
@@ -154,29 +172,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-
-    /*
-    if(Robot.m_pidDriveTrain.getManualDriveOn()) {
-      // Sends joystick values to PIDDriveTrain
-      // Slow down rotation
-      double rotationScalar = .75;
-      // Slow down when lift is up
-      double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
-
-      double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
-      double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
-      double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
-      
-      // Square the values to make driving less sensitive
-      // speed = speed * speed * Math.signum(speed);
-      // strafe = strafe * strafe * Math.signum(strafe);
-      rotation = rotation*rotation * Math.signum(rotation);
-
-      m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
-    } */
     
     // Slow down rotation
-    double rotationScalar = .75;
+    double rotationScalar = .5;
 
     double speed = -Robot.m_oi.driveController.getLeftYAxis();
     double strafe = Robot.m_oi.driveController.getLeftXAxis();
@@ -185,7 +183,7 @@ public class Robot extends TimedRobot {
     // Square the values to make driving less sensitive
     // speed = speed * speed * Math.signum(speed);
     // strafe = strafe * strafe * Math.signum(strafe);
-    rotation = rotation*rotation * Math.signum(rotation);
+    // rotation = rotation*rotation * Math.signum(rotation);
     
     switch(m_driveTrain.driveState) {
       case kManual:
@@ -200,8 +198,21 @@ public class Robot extends TimedRobot {
           m_driveTrain.driveState = DriveTrain.DriveState.kManual;
         }
         break;
+      case kAutoHorizontal:
+        m_driveTrain.setInputJoystickSpeeds(speed, 0, rotation);
+        break;
       default:
         break;
+    }
+
+    if(Robot.m_oi.driveController.getRightTrigger() > 0) {
+      // Right trigger to ascend
+      m_lift.setInputJoystickSpeed(-Robot.m_oi.driveController.getRightTrigger());
+    } else if(Robot.m_oi.driveController.getLeftTrigger() > 0) {
+      // Left trigger to descend
+      m_lift.setInputJoystickSpeed(Robot.m_oi.driveController.getLeftTrigger());
+    } else {
+      m_lift.setInputJoystickSpeed(0);
     }
   }
 
@@ -214,8 +225,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // m_pidDriveTrain.setSetpoint360(m_navX.getAngle());
+    
     m_driveTrain.rotationPIDController.setSetpoint(getComparedYaw());
+    m_habMechanism.retractBackPistons();
+    m_habMechanism.retractFrontPistons();
 
     // These commands needs to be started manually once
     Scheduler.getInstance().add(new RocketHatchPositioningCommand());
@@ -228,30 +241,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    
-    /*
-    if(Robot.m_pidDriveTrain.getManualDriveOn()) {
-      // Sends joystick values to PIDDriveTrain
-      // Slow down rotation
-      double rotationScalar = .75;
-      // Slow down when lift is up
-      double scalar = 1 - .5 * (Robot.m_lift.getRightLiftEncoder() / Robot.m_lift.getMaxRightLiftEncoderValue());
-
-      double speed = -Robot.m_oi.driveController.getLeftYAxis() * scalar;
-      double strafe = Robot.m_oi.driveController.getLeftXAxis() * scalar;
-      double rotation = Robot.m_oi.driveController.getRightXAxis() * scalar * rotationScalar;
-      
-      // Square the values to make driving less sensitive
-      // speed = speed * speed * Math.signum(speed);
-      // strafe = strafe * strafe * Math.signum(strafe);
-      rotation = rotation*rotation * Math.signum(rotation);
-
-      m_pidDriveTrain.setInputSpeeds(speed, strafe, rotation);
-    }*/
-    
-    
     // Slow down rotation
-    double rotationScalar = .75;
+    double rotationScalar = .5;
 
     double speed = -Robot.m_oi.driveController.getLeftYAxis();
     double strafe = Robot.m_oi.driveController.getLeftXAxis();
@@ -260,7 +251,7 @@ public class Robot extends TimedRobot {
     // Square the values to make driving less sensitive
     // speed = speed * speed * Math.signum(speed);
     // strafe = strafe * strafe * Math.signum(strafe);
-    rotation = rotation*rotation * Math.signum(rotation);
+    // rotation = rotation*rotation * Math.signum(rotation);
     
     switch(m_driveTrain.driveState) {
       case kManual:
@@ -275,8 +266,21 @@ public class Robot extends TimedRobot {
           m_driveTrain.driveState = DriveTrain.DriveState.kManual;
         }
         break;
+      case kAutoHorizontal:
+        m_driveTrain.setInputJoystickSpeeds(speed, 0, rotation);
+        break;
       default:
         break;
+    }
+
+    if(Robot.m_oi.driveController.getRightTrigger() > 0) {
+      // Right trigger to ascend
+      m_lift.setInputJoystickSpeed(-Robot.m_oi.driveController.getRightTrigger());
+    } else if(Robot.m_oi.driveController.getLeftTrigger() > 0) {
+      // Left trigger to descend
+      m_lift.setInputJoystickSpeed(Robot.m_oi.driveController.getLeftTrigger());
+    } else {
+      m_lift.setInputJoystickSpeed(0);
     }
   }
 

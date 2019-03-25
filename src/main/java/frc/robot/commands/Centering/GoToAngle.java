@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.NavX;
+package frc.robot.commands.Centering;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
@@ -13,24 +13,22 @@ import frc.robot.Robot;
 /**
  * Add your docs here.
  */
-public class ResetNavX extends InstantCommand {
+public class GoToAngle extends InstantCommand {
+  private double angle;
   /**
    * Add your docs here.
    */
-  public ResetNavX() {
+  public GoToAngle(double num) {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    angle = num;
   }
 
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_navX.reset();
-    Robot.m_driveTrain.zeroAngle = 0;
-    Robot.m_driveTrain.rotationPIDController.reset();
-    Robot.m_driveTrain.rotationPIDController.setSetpoint(Robot.getComparedYaw());
-    Robot.m_driveTrain.rotationPIDController.enable();
+    Robot.m_driveTrain.rotationPIDController.setSetpoint(angle - Robot.m_driveTrain.zeroAngle);
   }
 
 }

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.NavX;
+package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
@@ -13,11 +13,11 @@ import frc.robot.Robot;
 /**
  * Add your docs here.
  */
-public class ResetNavX extends InstantCommand {
+public class ExtendIntake extends InstantCommand {
   /**
    * Add your docs here.
    */
-  public ResetNavX() {
+  public ExtendIntake() {
     super();
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
@@ -26,11 +26,7 @@ public class ResetNavX extends InstantCommand {
   // Called once when the command executes
   @Override
   protected void initialize() {
-    Robot.m_navX.reset();
-    Robot.m_driveTrain.zeroAngle = 0;
-    Robot.m_driveTrain.rotationPIDController.reset();
-    Robot.m_driveTrain.rotationPIDController.setSetpoint(Robot.getComparedYaw());
-    Robot.m_driveTrain.rotationPIDController.enable();
+    Robot.m_intake.extendIntake();
   }
 
 }

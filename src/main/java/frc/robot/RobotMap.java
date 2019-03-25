@@ -33,4 +33,6 @@ public class RobotMap {
   public static final int hatchLauncherSolenoidOffPort = 3;
   public static final int hatchExtenderSolenoidOnPort = 4;
   public static final int hatchExtenderSolenoidOffPort = 5;
+  public static final int habFrontSolenoidPort = 6;
+  public static final int habBackSolenoidPort = 7;
 }

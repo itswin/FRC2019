@@ -14,7 +14,7 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveTrainBaseCommand extends Command {
   private boolean wasMoving;
   private final double kMaxSpeedDeltaPerLoop = .1;
-  private final boolean rampRateEnabled = false;
+  private final boolean rampRateEnabled = true;
 
   public DriveTrainBaseCommand() {
     // Use requires() here to declare subsystem dependencies
@@ -46,6 +46,7 @@ public class DriveTrainBaseCommand extends Command {
         break;
       case kAutoHorizontal:
         inputStrafeSpeed = Robot.m_driveTrain.getInputAutoStrafeSpeed();
+        inputSpeed = Robot.m_driveTrain.getInputJoystickSpeed();
         break;
     }
 
@@ -73,7 +74,6 @@ public class DriveTrainBaseCommand extends Command {
     }
     
     // Limit the rate you can change speed for all directions
-    // Not used right now, still has problems
     if(rampRateEnabled && inputSpeed > currentSpeed + kMaxSpeedDeltaPerLoop) {
       currentSpeed += kMaxSpeedDeltaPerLoop;
     } else if(rampRateEnabled && inputSpeed < currentSpeed - kMaxSpeedDeltaPerLoop) {

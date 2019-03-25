@@ -10,15 +10,15 @@ package frc.robot.PIDs;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-
 import frc.robot.subsystems.DriveTrain;
+
 /**
- * Grabs horizontal displacement from limelight network tables
+ * Add your docs here.
  */
-public class HorizontalDistancePIDSource implements PIDSource {
+public class CargoRotationPIDSource implements PIDSource {
     private PIDSourceType sourceType;
 
-    public HorizontalDistancePIDSource() {
+    public CargoRotationPIDSource() {
         sourceType = PIDSourceType.kDisplacement;
     }
     
@@ -44,9 +44,9 @@ public class HorizontalDistancePIDSource implements PIDSource {
         double error = -xDisplacement / Math.sqrt(contourArea);
         double sign = Math.signum(error);
         error = sign * Math.sqrt(error * sign);
-        // System.out.println("Horizontal Source: " + error);
+        System.out.println("Horizontal Source: " + error);
         // Smaller movements at a closer distance (when the contour is larger)
         // Square root to be less sensitive
-        return error - DriveTrain.kHorizontalSetpoint;
-	}
+        return error - DriveTrain.kCargoRotationSetpoint;
+    }
 }

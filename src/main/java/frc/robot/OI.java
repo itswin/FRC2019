@@ -8,9 +8,13 @@
 package frc.robot;
 
 import frc.controllers.LogitechController;
+import frc.robot.commands.Centering.*;
+import frc.robot.commands.HabMechanism.*;
 import frc.robot.commands.HatchMechanism.*;
 import frc.robot.commands.Lift.*;
 import frc.robot.commands.Macros.*;
+import frc.robot.commands.NavX.*;
+import frc.robot.subsystems.Lift;
 import frc.robot.commands.Intake.*;
 
 /**
@@ -51,24 +55,35 @@ public class OI {
     driveController = new LogitechController(0);
 
     // Intake
-    driveController.rightBumperButton.whileActive(new IntakeCommand());
+    driveController.rightBumperButton.whenPressed(new IntakeCommand()); // was whileActive
     driveController.rightBumperButton.whenReleased(new IntakeSmoothStopCommand());
-    driveController.leftBumperButton.whileActive(new OuttakeCommand());
+    driveController.leftBumperButton.whenPressed(new OuttakeCommand()); // was whileActive
     driveController.leftBumperButton.whenReleased(new StopIntakeCommand());
     driveController.xButton.whenPressed(new ToggleIntakeExtensionCommand());
 
     // Lift
-    driveController.aButton.whileActive(new RocketCargoPositioningCommand());
+    driveController.aButton.whileActive(new RocketCargoPositioningCommand()); // was whileActive
     driveController.aButton.whenReleased(new RocketHatchPositioningCommand());
-    driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
+    // driveController.aButton.cancelWhenActive(new RocketHatchPositioningCommand());
 
     // Hatch Mechanism
-    driveController.startButton.whenPressed(new ToggleHatchLauncherState());
-    driveController.startButton.whenReleased(new ToggleHatchLauncherState());
+    // driveController.startButton.whenPressed(new ToggleHatchLauncherState());
+    // driveController.startButton.whenReleased(new ToggleHatchLauncherState());
 
     // Macros
     driveController.bButton.whenPressed(new GrabHatchFromStation());
-    driveController.backButton.whenPressed(new ShootCargoIntoShip());
+    // driveController.povLeftButton.whenPressed(new ShootCargoAtHeight(Lift.kCargoShip));
     driveController.yButton.whenPressed(new LaunchHatch());
+    
+    // driveController.leftJoystickButton.whenPressed(new ResetNavX());
+
+    driveController.rightJoystickButton.whenPressed(new LineUpWhileDriving()); // was whileActive
+    driveController.rightJoystickButton.whenReleased(new CancelLineupAndTurnOffLEDs());
+
+    driveController.backButton.whenPressed(new SecondHab());
+    driveController.startButton.whenPressed(new ToggleBackPistons());
+
+    driveController.leftJoystickButton.whileHeld(new FollowCargo());
+    driveController.leftJoystickButton.whenReleased(new IntakeTimedStop(1));
   }
 }

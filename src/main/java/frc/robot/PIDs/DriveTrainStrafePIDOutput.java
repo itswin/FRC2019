@@ -22,6 +22,7 @@ public class DriveTrainStrafePIDOutput implements PIDOutput {
         // Don't let the robot jiter (quick changes from -.2 to .2)
         if(Math.abs(output) < threshold) {
             sign = 0;
+            output = 0;
         }
 
         Robot.m_driveTrain.setInputAutoStrafeSpeed(sign * Robot.m_driveTrain.kHorizontalBaseline + output);

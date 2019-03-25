@@ -8,15 +8,14 @@
 package frc.robot.commands.Centering;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.Limelight.SetPipelineLEDMode;
-import frc.robot.commands.Limelight.SetVisionTargetPipeline;
+import frc.robot.commands.Limelight.SetCargoPipeline;
+import frc.robot.commands.Limelight.TurnOffLEDs;
 
-public class LineUpWhileDriving extends CommandGroup {
+public class CancelLineupAndTurnOffLEDs extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public LineUpWhileDriving() {
+  public CancelLineupAndTurnOffLEDs() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -33,11 +32,8 @@ public class LineUpWhileDriving extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addParallel(new SetPipelineLEDMode());
-    addParallel(new SetVisionTargetPipeline());
-    addSequential(new GoToClosestScoringAngle());
-    addSequential(new WaitForRotation());
-    addSequential(new WaitCommand(.25));
-    addSequential(new CenterHorizontallyWhileDriving());
+    addSequential(new CancelHorizontalLineup());
+    addSequential(new TurnOffLEDs());
+    addSequential(new SetCargoPipeline());
   }
 }
